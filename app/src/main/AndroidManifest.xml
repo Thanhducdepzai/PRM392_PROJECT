@@ -16,6 +16,18 @@
             android:name=".ProfileActivity"
             android:exported="false" />
         <activity
+            android:name=".AddHouseActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditActivity"
+            android:exported="true" />
+        <activity
+            android:name=".HouseListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".HouseDetailActivity"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
