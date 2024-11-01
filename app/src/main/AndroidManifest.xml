@@ -44,6 +44,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AdminActivity.AccountManagementActivity"
+            android:exported="true">
+        </activity>
     </application>
 
 

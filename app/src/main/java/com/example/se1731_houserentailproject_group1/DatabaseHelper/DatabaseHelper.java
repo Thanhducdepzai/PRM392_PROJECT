@@ -421,4 +421,102 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return propertyImages;
 
     }
+
+    public User getAccount(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        User user = null;
+
+        try {
+            cursor = db.rawQuery("SELECT * FROM users WHERE id = ?", new String[]{String.valueOf(userId)});
+
+            // Kiểm tra nếu cursor không rỗng và di chuyển đến hàng đầu tiên thành công
+            if (cursor != null && cursor.moveToFirst()) {
+                user = new User(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("full_name")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("email")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("password_hash")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("phone_number")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("created_at")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("updated_at")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("Roles"))
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return user;
+    }
+
+    public User getAccountByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        User user = null;
+
+        try {
+            cursor = db.rawQuery("SELECT * FROM users WHERE email = ?", new String[]{email});
+
+            // Kiểm tra nếu cursor không rỗng và di chuyển đến hàng đầu tiên thành công
+            if (cursor != null && cursor.moveToFirst()) {
+                user = new User(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("full_name")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("email")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("password_hash")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("phone_number")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("created_at")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("updated_at")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("Roles"))
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return user;
+    }
+
+    public List<User> getAllAccounts() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+        List<User> userList = new ArrayList<>();
+
+        try {
+            cursor = db.rawQuery("SELECT * FROM users", null);
+
+            // Kiểm tra nếu cursor không rỗng và di chuyển đến hàng đầu tiên thành công
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    User user = new User(
+                            cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("full_name")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("email")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("password_hash")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("phone_number")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("created_at")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("updated_at")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("Roles"))
+                    );
+                    userList.add(user); // Thêm người dùng vào danh sách
+                } while (cursor.moveToNext()); // Di chuyển đến hàng tiếp theo
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return userList; // Trả về danh sách người dùng
+    }
+
+
 }
