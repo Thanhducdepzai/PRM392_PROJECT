@@ -29,6 +29,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    buildFeatures {
+        viewBinding = true
+    }
+    packaging {
+        resources {
+            excludes.add("META-INF/DEPENDENCIES") // Loại bỏ tệp META-INF/DEPENDENCIES
+        }
+    }
 }
 
 dependencies {
@@ -37,7 +45,17 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Thêm phụ thuộc BCrypt
+    implementation("org.mindrot:jbcrypt:0.4")
+    // Thêm phụ thuộc Mail
+
+
+    // Thêm phụ thuộc Sms
+    implementation("com.twilio.sdk:twilio:8.20.0")
 }
