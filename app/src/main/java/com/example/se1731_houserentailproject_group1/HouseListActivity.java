@@ -32,7 +32,7 @@ public class HouseListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-//        loadProperties();
+        loadProperties();
 
         findViewById(R.id.add_button).setOnClickListener(v -> {
             Intent intent = new Intent(HouseListActivity.this, AddHouseActivity.class);
@@ -40,17 +40,16 @@ public class HouseListActivity extends AppCompatActivity {
         });
     }
 
-//    private void loadProperties() {
-//        List<Property> properties = databaseHelper.getAllProperties();
-//        List<PropertyImage> propertiesImage = databaseHelper.getAllImageProperties();
-//        propertyAdapter = new PropertyAdapter(properties, propertiesImage, databaseHelper, this);
-//        recyclerView.setAdapter(propertyAdapter);
-//    }
+    private void loadProperties() {
+        List<Property> properties = databaseHelper.getAllProperties();
+        propertyAdapter = new PropertyAdapter(properties, databaseHelper, this);
+        recyclerView.setAdapter(propertyAdapter);
+    }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        loadProperties(); // Refresh the list after edit or delete
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadProperties(); // Refresh the list after edit or delete
+    }
 }
 

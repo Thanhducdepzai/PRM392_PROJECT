@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.se1731_houserentailproject_group1.Model.Property;
 import com.example.se1731_houserentailproject_group1.Model.PropertyImage;
@@ -208,33 +209,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // GET PROPERTY
 
-    // Method to get all properties
     public List<Property> getAllProperties() {
         List<Property> properties = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM properties", null);
-        if (cursor.moveToFirst()) {
-            do {
-                Property property = new Property(
-                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("address")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("city")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("state")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("postal_code")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("main_phone")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("property_type")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("image_base64"))
-                );
-                properties.add(property);
-            } while (cursor.moveToNext());
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery("SELECT * FROM properties", null);
+
+            // Check if cursor contains any data
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    try {
+                        Property property = new Property(
+                                cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("address")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("city")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("state")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("postal_code")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("main_phone")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
+                                cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
+                                cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("property_type")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("image_base64"))
+                        );
+                        properties.add(property);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("DatabaseHelper", "Error reading property data", e);
+                    }
+                } while (cursor.moveToNext());
+            } else {
+                Log.d("DatabaseHelper", "No properties found in the database or cursor is empty.");
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Failed to execute query to retrieve properties", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
-        cursor.close();
+
         return properties;
     }
+
 
     public Property getPropertyById(int propertyId) {
         SQLiteDatabase db = this.getReadableDatabase();

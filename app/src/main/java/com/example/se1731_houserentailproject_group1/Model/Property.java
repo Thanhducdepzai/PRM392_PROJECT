@@ -127,4 +127,3 @@ public class Property {
         this.imageBase64 = imageBase64;
     }
 }
-

@@ -1,56 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/activity_add_house.xml -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <!-- Name Input -->
+    <EditText
+        android:id="@+id/etPropertyName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:hint="Property Name" />
 
-        <EditText
-            android:id="@+id/property_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Property Name" />
+    <!-- Address Input -->
+    <EditText
+        android:id="@+id/etPropertyAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Address" />
 
-        <EditText
-            android:id="@+id/property_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Address"
-            android:layout_marginTop="8dp" />
+    <!-- City Input -->
+    <EditText
+        android:id="@+id/etPropertyCity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="City" />
 
-        <EditText
-            android:id="@+id/property_city"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="City"
-            android:layout_marginTop="8dp" />
+    <!-- State Input -->
+    <EditText
+        android:id="@+id/etPropertyState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="State" />
 
-        <EditText
-            android:id="@+id/property_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Property Type"
-            android:layout_marginTop="8dp" />
+    <!-- Postal Code Input -->
+    <EditText
+        android:id="@+id/etPropertyPostalCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Postal Code" />
 
-        <ImageView
-            android:id="@+id/property_image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Primary Image"
-            android:layout_marginTop="10dp" />
+    <!-- Main Phone Input -->
+    <EditText
+        android:id="@+id/etPropertyMainPhone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Main Phone" />
 
-        <Button
-            android:id="@+id/save_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            android:layout_marginTop="16dp"
-            android:layout_gravity="end" />
-    </LinearLayout>
-</ScrollView>
+    <!-- Fax Number Input -->
+    <EditText
+        android:id="@+id/etPropertyFaxNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fax Number" />
+
+    <!-- Unit Count Input -->
+    <EditText
+        android:id="@+id/etPropertyUnitCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="Unit Count" />
+
+    <!-- Owner Spinner -->
+    <Spinner
+        android:id="@+id/spinnerOwner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select Owner" />
+
+    <!-- Property Type Input -->
+    <EditText
+        android:id="@+id/etPropertyType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Property Type" />
+
+    <!-- Image Selection Button -->
+    <Button
+        android:id="@+id/btnChooseImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#1E90FF"
+        android:text="Choose Image" />
+
+    <!-- Preview ImageView -->
+    <ImageView
+        android:id="@+id/imagePreview"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:visibility="gone"/>
+
+    <!-- Add Button -->
+    <Button
+        android:id="@+id/btnAddProperty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#1E90FF"
+        android:text="Add Property" />
+</LinearLayout>

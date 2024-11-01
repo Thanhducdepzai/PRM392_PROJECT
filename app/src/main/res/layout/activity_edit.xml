@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/activity_edit.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -10,12 +8,14 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Property Name -->
         <EditText
             android:id="@+id/property_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Property Name" />
 
+        <!-- Address -->
         <EditText
             android:id="@+id/property_address"
             android:layout_width="match_parent"
@@ -23,6 +23,7 @@
             android:hint="Address"
             android:layout_marginTop="8dp" />
 
+        <!-- City -->
         <EditText
             android:id="@+id/property_city"
             android:layout_width="match_parent"
@@ -30,6 +31,55 @@
             android:hint="City"
             android:layout_marginTop="8dp" />
 
+        <!-- State -->
+        <EditText
+            android:id="@+id/property_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="State"
+            android:layout_marginTop="8dp" />
+
+        <!-- Postal Code -->
+        <EditText
+            android:id="@+id/property_postal_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Postal Code"
+            android:layout_marginTop="8dp" />
+
+        <!-- Phone Number -->
+        <EditText
+            android:id="@+id/property_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:layout_marginTop="8dp" />
+
+        <!-- Fax Number -->
+        <EditText
+            android:id="@+id/property_fax"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Fax Number"
+            android:layout_marginTop="8dp" />
+
+        <!-- Unit Count -->
+        <EditText
+            android:id="@+id/property_unit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Unit Count"
+            android:inputType="number"
+            android:layout_marginTop="8dp" />
+
+        <!-- Owner Selector -->
+        <Spinner
+            android:id="@+id/property_owner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+        <!-- Property Type -->
         <EditText
             android:id="@+id/property_type"
             android:layout_width="match_parent"
@@ -37,20 +87,29 @@
             android:hint="Property Type"
             android:layout_marginTop="8dp" />
 
-        <ImageView
-            android:id="@+id/property_image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:contentDescription="Primary Image"
-            android:layout_marginTop="10dp" />
+        <!-- Image Selector and Preview -->
+        <Button
+            android:id="@+id/select_image_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#1E90FF"
+            android:text="Choose Image" />
 
+        <ImageView
+            android:id="@+id/image_preview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="Property Image Preview" />
+
+        <!-- Save Button -->
         <Button
             android:id="@+id/save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save"
             android:layout_marginTop="16dp"
-            android:layout_gravity="end" />
+            android:backgroundTint="#1E90FF"
+            android:text="Save" />
     </LinearLayout>
 </ScrollView>

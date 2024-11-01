@@ -60,10 +60,10 @@ public class PropertyAdapter extends RecyclerView.Adapter<PropertyAdapter.Proper
         holder.propertyUnit.setText("Số Đơn Vị: " + property.getUnitCount());
         holder.propertyType.setText("Loại Bất Động Sản: " + property.getPropertyType());
 
-//        // Chuyển đổi image_base64 thành Bitmap
-//        //byte[] decodedString = Base64.decode(property.getImageBase64(), Base64.DEFAULT);
-//        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//        holder.imageBase64.setImageBitmap(decodedByte);
+        // Chuyển đổi image_base64 thành Bitmap
+        byte[] decodedString = Base64.decode(property.getImageBase64(), Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        holder.imageBase64.setImageBitmap(decodedByte);
 
         // Nút Edit
         holder.editButton.setOnClickListener(v -> {
@@ -106,10 +106,10 @@ public class PropertyAdapter extends RecyclerView.Adapter<PropertyAdapter.Proper
             propertyPostalCode = itemView.findViewById(R.id.property_postal_code);
             propertyPhone = itemView.findViewById(R.id.property_phone);
             propertyFax = itemView.findViewById(R.id.property_fax);
-//            propertyOwner = itemView.findViewById(R.id.property_owner);
-//            propertyUnit = itemView.findViewById(R.id.property_unit);
-//            propertyType = itemView.findViewById(R.id.property_type);
-//            imageBase64 = itemView.findViewById(R.id.image_display);
+            propertyOwner = itemView.findViewById(R.id.property_owner);
+            propertyUnit = itemView.findViewById(R.id.property_unit);
+            propertyType = itemView.findViewById(R.id.property_type);
+            imageBase64 = itemView.findViewById(R.id.image_display);
             editButton = itemView.findViewById(R.id.edit_button);
             deleteButton = itemView.findViewById(R.id.delete_button);
         }
