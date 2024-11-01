@@ -12,9 +12,10 @@ public class Property {
     private int unitCount;
     private int ownerId;
     private String propertyType;
+    private String imageBase64;
 
 
-    public Property(int id, String name, String address, String city, String state, String postalCode, String mainPhone, String faxNumber, int unitCount, int ownerId, String propertyType) {
+    public Property(int id, String name, String address, String city, String state, String postalCode, String mainPhone, String faxNumber, int unitCount, int ownerId, String propertyType, String imageBase64) {
         this.id = id;
         this.name = name;
         this.address = address;
@@ -26,6 +27,7 @@ public class Property {
         this.unitCount = unitCount;
         this.ownerId = ownerId;
         this.propertyType = propertyType;
+        this.imageBase64 = imageBase64;
     }
 
     // Getters and Setters
@@ -116,4 +118,13 @@ public class Property {
     public void setPropertyType(String propertyType) {
         this.propertyType = propertyType;
     }
+
+    public String getImageBase64() {
+        return imageBase64;
+    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
+    }
 }
+

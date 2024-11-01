@@ -10,6 +10,10 @@ public class User {
     private String updatedAt;
     private String roles;
 
+    public User(int id, String fullName) {
+        this.id = id;
+        this.fullName = fullName;
+    }
 
     public User(int id, String fullName, String email, String passwordHash, String phoneNumber, String createdAt, String updatedAt, String roles) {
         this.id = id;
@@ -85,5 +89,10 @@ public class User {
 
     public void setRoles(String roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return fullName;  // Displays fullName in the Spinner
     }
 }
