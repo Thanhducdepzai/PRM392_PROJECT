@@ -59,25 +59,25 @@ public class HouseDetailActivity extends AppCompatActivity {
 
         if (property != null) {
             displayPropertyDetails(property);
-         //   loadFirstPropertyImage(property.getId());
+            //   loadFirstPropertyImage(property.getId());
         } else {
             Toast.makeText(this, "No property found.", Toast.LENGTH_SHORT).show();
         }
 
         // Set up click listener for changing image
-      //  propertyImageView.setOnClickListener(v -> openGallery());
+        //  propertyImageView.setOnClickListener(v -> openGallery());
     }
-/*
-    private void loadFirstPropertyImage(int propertyId) {
-        PropertyImage propertyImage = databaseHelper.getFirstPropertyImage(propertyId);
-        if (propertyImage != null) {
-            Bitmap bitmap = BitmapFactory.decodeFile(propertyImage.getImageUrl());
-            propertyImageView.setImageBitmap(bitmap);
-        } else {
-            Toast.makeText(this, "No images found for this property.", Toast.LENGTH_SHORT).show();
+    /*
+        private void loadFirstPropertyImage(int propertyId) {
+            PropertyImage propertyImage = databaseHelper.getFirstPropertyImage(propertyId);
+            if (propertyImage != null) {
+                Bitmap bitmap = BitmapFactory.decodeFile(propertyImage.getImageUrl());
+                propertyImageView.setImageBitmap(bitmap);
+            } else {
+                Toast.makeText(this, "No images found for this property.", Toast.LENGTH_SHORT).show();
+            }
         }
-    }
-*/
+    */
     private void displayPropertyDetails(Property property) {
         nameTextView.setText(property.getName());
         addressTextView.setText("Địa Chỉ: " + property.getAddress());

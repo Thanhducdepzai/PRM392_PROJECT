@@ -5,9 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.se1731_houserentailproject_group1.Model.Property;
 import com.example.se1731_houserentailproject_group1.Model.PropertyImage;
+import com.example.se1731_houserentailproject_group1.Model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "houserental.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,7 +48,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "fax_number TEXT," +
                 "unit_count INTEGER," +
                 "owner_id INTEGER," +
-                "property_type TEXT)");
+                "property_type TEXT," +
+                "image_base64 TEXT)");
 
         // Tạo bảng UNITS
         db.execSQL("CREATE TABLE units (" +
@@ -94,20 +97,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "comment TEXT," +
                 "created_at TEXT)");
 
-        // Tạo bảng PROPERTY_IMAGES
+        // Add the property_images table creation
         db.execSQL("CREATE TABLE property_images (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "property_id INTEGER," +
                 "image_url TEXT," +
-                "is_primary BOOLEAN)");
+                "is_primary INTEGER," +
+                "FOREIGN KEY (property_id) REFERENCES properties(id))");
+
         // Insert sample data
         db.execSQL("INSERT INTO users (full_name, email, password_hash, phone_number, created_at, updated_at, Roles) VALUES " +
                 "('John Doe', 'john.doe@example.com', 'password123', '1234567890', '2023-01-01', '2023-01-01', 'User')," +
                 "('Jane Smith', 'jane.smith@example.com', 'password456', '0987654321', '2023-01-01', '2023-01-01', 'Admin')");
 
-        db.execSQL("INSERT INTO properties (name, address, city, state, postal_code, main_phone, fax_number, unit_count, owner_id, property_type) VALUES " +
-                "('Sunshine Apartments', '123 Main St', 'Los Angeles', 'CA', '90001', '1234567890', '1234567890', 10, 1, 'Apartment')," +
-                "('Lakeside Villas', '456 Oak Ave', 'San Diego', 'CA', '92037', '0987654321', '0987654321', 15, 2, 'Villa')");
+        db.execSQL("INSERT INTO properties (name, address, city, state, postal_code, main_phone, fax_number, unit_count, owner_id, property_type, image_base64) VALUES " +
+                "('Sunshine Apartments', '123 Main St', 'Los Angeles', 'CA', '90001', '1234567890', '1234567890', 10, 1, 'Apartment','' )," +
+                "('Lakeside Villas', '456 Oak Ave', 'San Diego', 'CA', '92037', '0987654321', '0987654321', 15, 2, 'Villa', '')");
 
         db.execSQL("INSERT INTO units (property_id, unit_number, room_count, bathroom_count, square_footage, floor_plan) VALUES " +
                 "(1, 'A1', 2, 1, 800, '2BHK')," +
@@ -130,8 +135,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "(2, 2, 4, 'Nice and comfortable', '2023-01-02')");
 
         db.execSQL("INSERT INTO property_images (property_id, image_url, is_primary) VALUES " +
-                "(1, '@drawable/house2.jpeg', 1)," +
-                "(2, '@drawable/house3.jpeg', 0)");
+                "(1, '@drawable/house1.jpeg', 1)," +
+                "(2, '@drawable/house2.jpeg', 0)");
     }
 
 
@@ -140,77 +145,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Xóa các bảng cũ nếu cần nâng cấp
         db.execSQL("DROP TABLE IF EXISTS users");
         db.execSQL("DROP TABLE IF EXISTS properties");
+        db.execSQL("DROP TABLE IF EXISTS units");
+        db.execSQL("DROP TABLE IF EXISTS guests");
+        db.execSQL("DROP TABLE IF EXISTS payments");
+        db.execSQL("DROP TABLE IF EXISTS guest_bookings");
+        db.execSQL("DROP TABLE IF EXISTS reviews");
+        db.execSQL("DROP TABLE IF EXISTS property_images");
         // Tiếp tục cho các bảng khác
         onCreate(db);
     }
 
-    // Method to get all properties
-    public List<Property> getAllProperties() {
-        List<Property> properties = new ArrayList<>();
+    public String getOwnerName(int ownerId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM properties", null);
-        if (cursor.moveToFirst()) {
-            do {
-                Property property = new Property(
-                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("address")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("city")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("state")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("postal_code")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("main_phone")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("property_type"))
-                );
-                properties.add(property);
-            } while (cursor.moveToNext());
+        Cursor cursor = db.rawQuery("SELECT full_name FROM users WHERE id = ?", new String[]{String.valueOf(ownerId)});
+        if (cursor != null && cursor.moveToFirst()) {
+            String ownerName = cursor.getString(0);
+            cursor.close();
+            return ownerName;
         }
-        cursor.close();
-        return properties;
+        return "Unknown Owner";
     }
 
-    // Method to get all image properties of the house
-    public List<PropertyImage> getAllImageProperties() {
-        List<PropertyImage> imageProperties = new ArrayList<>();
+    public List<User> getOwnerListForSelector() {
+        List<User> ownerList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Query the property_images table for all columns
-        Cursor cursor = db.rawQuery("SELECT * FROM property_images", null);
+        // Query to retrieve user_id and name for each owner
+        String query = "SELECT id, full_name FROM users";
+        Cursor cursor = db.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
-                // Create a PropertyImage object using appropriate columns
-                PropertyImage propertyImage = new PropertyImage(
-                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("property_id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("image_url")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("is_primary")) == 1 // Convert to boolean
-                );
-                imageProperties.add(propertyImage);
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String full_name = cursor.getString(cursor.getColumnIndexOrThrow("full_name"));
+                ownerList.add(new User(id, full_name));
             } while (cursor.moveToNext());
         }
 
         cursor.close();
-        return imageProperties;
-    }
-
-
-    // Method to get property image by property ID
-    public PropertyImage getPropertyImage(int propertyId) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM property_images WHERE property_id = ? AND is_primary = 1", new String[]{String.valueOf(propertyId)});
-        if (cursor.moveToFirst()) {
-            return new PropertyImage(
-                    cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                    cursor.getInt(cursor.getColumnIndexOrThrow("property_id")),
-                    cursor.getString(cursor.getColumnIndexOrThrow("image_url")),
-                    cursor.getInt(cursor.getColumnIndexOrThrow("is_primary")) == 1
-            );
-        }
-        cursor.close();
-        return null;
+        db.close();
+        return ownerList;
     }
 
     public boolean updateProperty(int propertyId, ContentValues values) {
@@ -231,6 +205,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete("properties", "id = ?", new String[]{String.valueOf(propertyId)});
         db.delete("property_images", "property_id = ?", new String[]{String.valueOf(propertyId)});
         db.close();
+    }
+
+    // GET PROPERTY
+
+    public List<Property> getAllProperties() {
+        List<Property> properties = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery("SELECT * FROM properties", null);
+
+            // Check if cursor contains any data
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    try {
+                        Property property = new Property(
+                                cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("address")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("city")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("state")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("postal_code")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("main_phone")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
+                                cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
+                                cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("property_type")),
+                                cursor.getString(cursor.getColumnIndexOrThrow("image_base64"))
+                        );
+                        properties.add(property);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e("DatabaseHelper", "Error reading property data", e);
+                    }
+                } while (cursor.moveToNext());
+            } else {
+                Log.d("DatabaseHelper", "No properties found in the database or cursor is empty.");
+            }
+        } catch (Exception e) {
+            Log.e("DatabaseHelper", "Failed to execute query to retrieve properties", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return properties;
     }
 
 
@@ -255,7 +277,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("property_type"))
+                        cursor.getString(cursor.getColumnIndexOrThrow("property_type")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("image_base64"))
                 );
             }
         } catch (Exception e) {
@@ -288,7 +311,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("property_type"))
+                        cursor.getString(cursor.getColumnIndexOrThrow("property_type")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("image_base64"))
                 );
             }
         } finally {
@@ -297,6 +321,51 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
         return property;
+    }
+
+
+
+    // GET PROPERTY IMAGE
+
+    // Method to get all image properties of the house
+    public List<PropertyImage> getAllImageProperties() {
+        List<PropertyImage> imageProperties = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query the property_images table for all columns
+        Cursor cursor = db.rawQuery("SELECT * FROM property_images", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                // Create a PropertyImage object using appropriate columns
+                PropertyImage propertyImage = new PropertyImage(
+                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("property_id")),
+                        cursor.getString(cursor.getColumnIndexOrThrow("image_url")),
+                        cursor.getInt(cursor.getColumnIndexOrThrow("is_primary")) == 1 // Convert to boolean
+                );
+                imageProperties.add(propertyImage);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return imageProperties;
+    }
+
+    // Method to get property image by property ID
+    public PropertyImage getPropertyImage(int propertyId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM property_images WHERE property_id = ? AND is_primary = 1", new String[]{String.valueOf(propertyId)});
+        if (cursor.moveToFirst()) {
+            return new PropertyImage(
+                    cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("property_id")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("image_url")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("is_primary")) == 1
+            );
+        }
+        cursor.close();
+        return null;
     }
 
     public PropertyImage getFirstPropertyImage(int propertyId) {

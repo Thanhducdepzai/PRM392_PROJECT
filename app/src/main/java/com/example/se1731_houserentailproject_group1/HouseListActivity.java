@@ -42,8 +42,7 @@ public class HouseListActivity extends AppCompatActivity {
 
     private void loadProperties() {
         List<Property> properties = databaseHelper.getAllProperties();
-        List<PropertyImage> propertiesImage = databaseHelper.getAllImageProperties();
-        propertyAdapter = new PropertyAdapter(properties, propertiesImage, databaseHelper, this);
+        propertyAdapter = new PropertyAdapter(properties, databaseHelper, this);
         recyclerView.setAdapter(propertyAdapter);
     }
 

@@ -8,9 +8,9 @@
     android:layout_marginBottom="8dp"
     android:elevation="4dp">
 
-    <!-- ImageView on the Left -->
+    <!-- TextView for Image Displayer on the Left -->
     <ImageView
-        android:id="@+id/property_image"
+        android:id="@+id/image_display"
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:layout_weight="1"
@@ -78,7 +78,14 @@
             android:paddingTop="4dp" />
 
         <TextView
-            android:id="@+id/property_unit_count"
+            android:id="@+id/property_owner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chủ sở hữu: "
+            android:paddingTop="4dp" />
+
+        <TextView
+            android:id="@+id/property_unit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Số Đơn Vị: "
@@ -102,13 +109,15 @@
                 android:id="@+id/edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit"
-                android:layout_marginEnd="10dp" />
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="#1E90FF"
+                android:text="Edit" />
 
             <Button
                 android:id="@+id/delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#1E90FF"
                 android:text="Delete" />
         </LinearLayout>
     </LinearLayout>
