@@ -73,8 +73,8 @@ public class AuthenticationActivity extends AppCompatActivity {
 
             sessionManager.createSession(user.getRoles());
             if (user.getRoles().equals("Admin")) {
-//                Intent intent = new Intent(this, AdminActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(this, HouseListActivity.class);
+                startActivity(intent);
             }
             if(user.getRoles().equals("User")) {
                 {
