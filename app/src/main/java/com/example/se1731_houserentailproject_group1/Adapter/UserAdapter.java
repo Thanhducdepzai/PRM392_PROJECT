@@ -8,7 +8,7 @@ import android.content.Context;
 import com.example.se1731_houserentailproject_group1.DatabaseHelper.DatabaseHelper;
 import com.example.se1731_houserentailproject_group1.Model.User;
 
-//import org.mindrot.jbcrypt.BCrypt;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserAdapter {
     private DatabaseHelper dbHelper;
@@ -29,8 +29,8 @@ public class UserAdapter {
     // Đăng ký người dùng
     public long registerUser(User user) {
         // Mã hóa mật khẩu trước khi lưu
-        //String passwordHash = hashPassword(user.getPasswordHash());
-        //user.setPasswordHash(passwordHash); // Cập nhật mật khẩu đã mã hóa vào đối tượng User
+        String passwordHash = hashPassword(user.getPasswordHash());
+        user.setPasswordHash(passwordHash); // Cập nhật mật khẩu đã mã hóa vào đối tượng User
 
         ContentValues values = new ContentValues();
         values.put("full_name", user.getFullName());
@@ -64,7 +64,7 @@ public class UserAdapter {
             );
 
             // So sánh mật khẩu người dùng nhập với mật khẩu đã mã hóa trong cơ sở dữ liệu
-            //if (BCrypt.checkpw(password, user.getPasswordHash())) {
+            if (BCrypt.checkpw(password, user.getPasswordHash())) {
                 // Mật khẩu khớp
                 return user;
             } else {
@@ -73,29 +73,24 @@ public class UserAdapter {
             }
         }
 
-//        // Đảm bảo đóng con trỏ
-//        if (cursor != null) {
-//            cursor.close();
-//        }
-//
-//        return null; // Người dùng không tồn tại
-//    }
-//
-//    // Mã hóa mật khẩu
-//    private String hashPassword(String password) {
-//        return BCrypt.hashpw(password, BCrypt.gensalt());
-//    }
-//
-//    // Kiểm tra email đã tồn tại chưa
-//    public boolean checkEmailExist(String email) {
-//        String query = "SELECT * FROM users WHERE email = ?";
-//        Cursor cursor = database.rawQuery(query, new String[] {email});
-//
-//        if (cursor != null && cursor.moveToFirst()) {
-//            cursor.close();
-//            return true; // Email đã tồn tại
-//        }
-//
-//        return false; // Email chưa tồn tại
-//    }
+        // Đảm bảo đóng con trỏ
+        if (cursor != null) {
+            cursor.close();
+        }
+        return null; // Người dùng không tồn tại
+    }
+    // Mã hóa mật khẩu
+    private String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+    // Kiểm tra email đã tồn tại chưa
+    public boolean checkEmailExist(String email) {
+        String query = "SELECT * FROM users WHERE email = ?";
+        Cursor cursor = database.rawQuery(query, new String[] {email});
+        if (cursor != null && cursor.moveToFirst()) {
+            cursor.close();
+            return true; // Email đã tồn tại
+        }
+        return false; // Email chưa tồn tại
+    }
 }
