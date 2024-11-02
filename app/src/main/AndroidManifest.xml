@@ -47,6 +47,8 @@
         <activity android:name=".AdminActivity.AccountManagementActivity"
             android:exported="true">
         </activity>
+        <activity android:name=".AdminActivity.DashboardActivity"
+            android:exported="true"/>
     </application>
 
 
