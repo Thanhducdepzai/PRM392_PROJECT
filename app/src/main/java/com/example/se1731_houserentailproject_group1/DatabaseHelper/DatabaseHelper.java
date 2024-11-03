@@ -256,40 +256,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public Property getPropertyById(int propertyId) {
+    public Property getPropertyById(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = null;
         Property property = null;
 
-        try {
-            cursor = db.rawQuery("SELECT * FROM properties WHERE id = ?", new String[]{String.valueOf(propertyId)});
-
-            // Kiểm tra nếu cursor không rỗng và di chuyển đến hàng đầu tiên thành công
-            if (cursor != null && cursor.moveToFirst()) {
-                property = new Property(
-                        cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("name")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("address")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("city")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("state")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("postal_code")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("main_phone")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
-                        cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("property_type")),
-                        cursor.getString(cursor.getColumnIndexOrThrow("image_base64"))
-                );
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        Cursor cursor = db.rawQuery("SELECT * FROM properties WHERE id = ?", new String[]{String.valueOf(id)});
+        if (cursor != null && cursor.moveToFirst()) {
+            property = new Property(
+                    cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("name")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("address")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("city")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("state")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("postal_code")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("main_phone")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("fax_number")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("unit_count")),
+                    cursor.getInt(cursor.getColumnIndexOrThrow("owner_id")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("property_type")),
+                    cursor.getString(cursor.getColumnIndexOrThrow("image_base64"))
+            );
+            cursor.close();
         }
+        db.close();
         return property;
     }
+
 
     // Add this method to fetch the first Property in the properties table
     public Property getFirstProperty() {
