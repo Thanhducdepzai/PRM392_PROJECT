@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#FFFFFF">
+
+    <!-- Top bar with profile icon and Log Out button aligned to the right -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_gravity="end">
+
+        <ImageView
+            android:id="@+id/profileIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_people"
+            android:contentDescription="Profile Icon"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="goToProfile" />
+
+        <TextView
+            android:id="@+id/logoutText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Log Out"
+            android:textColor="#FF0000"
+            android:paddingStart="8dp"
+            android:textSize="14sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="logout" />
+    </LinearLayout>
+
+    <!-- RecyclerView for displaying content -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="10dp" />
+
+    <!-- Button to view house list at the bottom, with blue color -->
+    <Button
+        android:id="@+id/viewHouseListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Xem danh sách nhà"
+        android:textSize="14sp"
+        android:backgroundTint="#0000FF"
+        android:textColor="#FFFFFF"
+        android:padding="8dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:onClick="goToHouseList" />
+
+</LinearLayout>
