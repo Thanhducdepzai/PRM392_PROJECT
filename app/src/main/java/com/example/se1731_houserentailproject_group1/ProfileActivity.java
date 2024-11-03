@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -24,8 +25,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile);
-
-        // Khởi tạo các TextView
         fullname = findViewById(R.id.tvFullName);
         phoneNum = findViewById(R.id.tvPhoneNum);
         email = findViewById(R.id.tvEmail);
@@ -46,5 +45,6 @@ public class ProfileActivity extends AppCompatActivity {
                 email.setText(user.getEmail());
             }
         }
+
     }
 }
