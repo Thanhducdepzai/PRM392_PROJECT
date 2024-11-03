@@ -15,6 +15,7 @@ public class SendOtp { // Renamed for clarity
         return String.valueOf((int) (Math.random() * 9000) + 1000);
     }
 
+
     // Method to send the OTP via SMS
     public static void sendOTP(Context context, String phone, String otp) {
         // Check if SMS permission is granted
