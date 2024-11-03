@@ -17,7 +17,7 @@ import com.example.se1731_houserentailproject_group1.Utils.SessionManager;
 
 public class ProfileActivity extends AppCompatActivity {
     private SessionManager sessionManager;
-    private TextView fullname, phoneNum, email;
+    private TextView fullname, phoneNum, email,txfullname;
     private Button btnedit, btnChangePassword;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +26,10 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         // Khởi tạo các TextView
-        fullname = findViewById(R.id.txfullname);
+        fullname = findViewById(R.id.tvFullName);
         phoneNum = findViewById(R.id.tvPhoneNum);
         email = findViewById(R.id.tvEmail);
+        txfullname = findViewById(R.id.txfullname);
 
         sessionManager = new SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
@@ -37,11 +38,10 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         } else {
-            // Lấy vai trò người dùng từ session
             User user = sessionManager.getUser();
             if (user != null) {
-                // Hiển thị thông tin User lên giao diện
                 fullname.setText(user.getFullName());
+                txfullname.setText(user.getFullName());
                 phoneNum.setText(user.getPhoneNumber());
                 email.setText(user.getEmail());
             }

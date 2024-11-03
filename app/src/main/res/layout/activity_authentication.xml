@@ -42,7 +42,7 @@
             android:layout_marginRight="20dp"
             android:inputType="textEmailAddress"
             android:maxLines="1"
-            android:textColor="@color/black"
+            android:textColor="@color/blue"
             />
 
         <!-- Password input field -->
@@ -69,7 +69,7 @@
             android:layout_margin="10sp"
             android:background="@android:color/transparent"
             android:text="Bạn chưa có tài khoản?"
-            android:textColor="@color/black" />
+            android:textColor="@color/blue" />
 
         <!-- Login button -->
         <Button
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Đăng nhập"
-            android:textColor="@color/black" />
+            android:textColor="@color/blue" />
     </LinearLayout>
 
     <!-- Logo image above the login form -->
