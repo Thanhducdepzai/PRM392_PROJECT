@@ -11,13 +11,16 @@ import com.example.se1731_houserentailproject_group1.Model.Property;
 import com.example.se1731_houserentailproject_group1.Model.PropertyImage;
 import com.example.se1731_houserentailproject_group1.Model.User;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "houserental.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -107,7 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Insert sample data
         db.execSQL("INSERT INTO users (full_name, email, password_hash, phone_number, created_at, updated_at, Roles) VALUES " +
-                "('John Doe', 'john.doe@example.com', 'password123', '1234567890', '2023-01-01', '2023-01-01', 'User')," +
+                "('John Doe', 'john.doe@example.com', '$2a$10$AXVAwE32Zs1jmxN/P3BZ1.m/KjqDQV0qXrjkHakQffiW7q/YcGSMe', '1234567890', '2023-01-01', '2023-01-01', 'User')," +
                 "('Jane Smith', 'jane.smith@example.com', 'password456', '0987654321', '2023-01-01', '2023-01-01', 'Admin')");
 
         db.execSQL("INSERT INTO properties (name, address, city, state, postal_code, main_phone, fax_number, unit_count, owner_id, property_type, image_base64) VALUES " +
@@ -483,8 +486,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try {
             cursor = db.rawQuery("SELECT * FROM users", null);
-
-            // Kiểm tra nếu cursor không rỗng và di chuyển đến hàng đầu tiên thành công
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     User user = new User(
@@ -497,8 +498,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             cursor.getString(cursor.getColumnIndexOrThrow("updated_at")),
                             cursor.getString(cursor.getColumnIndexOrThrow("Roles"))
                     );
-                    userList.add(user); // Thêm người dùng vào danh sách
-                } while (cursor.moveToNext()); // Di chuyển đến hàng tiếp theo
+                    userList.add(user);
+                } while (cursor.moveToNext());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -507,7 +508,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
-        return userList; // Trả về danh sách người dùng
+        return userList;
     }
     public void updateUserRole(int userId, String role) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -516,5 +517,103 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update("users", values, "id = ?", new String[]{String.valueOf(userId)});
         db.close();
     }
+
+    public boolean isPasswordCorrect(String enteredPassword) {
+        String storedPasswordHash = getUserPasswordHash();
+        if (storedPasswordHash == null) {
+            return false;
+        }
+        String hashedEnteredPassword = hashPassword(enteredPassword); // Implement this method to hash the password
+
+        return storedPasswordHash.equals(hashedEnteredPassword);
+    }
+
+    public String getUserPasswordHash() {
+        String passwordHash = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT password_hash FROM users WHERE id = ?";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(query, new String[]{String.valueOf(getCurrentUserId())});
+            Log.d("DatabaseHelper", "Executing query: " + query + " with ID: " + getCurrentUserId());
+
+            if (cursor != null && cursor.moveToFirst()) {
+                // Ensure the column exists
+                int columnIndex = cursor.getColumnIndex("password_hash");
+                if (columnIndex != -1) {
+                    passwordHash = cursor.getString(columnIndex);
+                } else {
+                    Log.e("DatabaseHelper", "Column 'password_hash' not found");
+                }
+            } else {
+                Log.e("DatabaseHelper", "Cursor is null or empty");
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging
+            Log.e("DatabaseHelper", "Error fetching password hash", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return passwordHash;
+    }
+
+
+    public void updatePassword(String newPassword) {
+
+        String hashedNewPassword = hashPassword(newPassword);
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("password_hash", hashedNewPassword);
+
+        int userId = getCurrentUserId();
+        try {
+            int rowsAffected = db.update("users", values, "id = ?", new String[]{String.valueOf(userId)});
+            if (rowsAffected > 0) {
+                Log.d("DatabaseHelper", "Password updated successfully");
+            } else {
+                Log.d("DatabaseHelper", "No rows affected, check if the user ID is correct.");
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging
+            Log.e("DatabaseHelper", "Error updating password", e);
+        }
+    }
+
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
+    public String getHashedPassword() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT password FROM users LIMIT 1", null); // Adjust query as needed
+        String hashedPassword = null;
+        if (cursor.moveToFirst()) {
+            hashedPassword = cursor.getString(0);
+        }
+        cursor.close();
+        return hashedPassword;
+    }
+
+    private int getCurrentUserId() {
+        return 1;
+    }
+
+
 
 }
