@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "112729499592",
+    "project_id": "renthome-17852",
+    "storage_bucket": "renthome-17852.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112729499592:android:3ea1fec5333895d16982fd",
+        "android_client_info": {
+          "package_name": "com.example.se1731_houserentailproject_group1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEv71l3vR7iKkz4OxVnEpATXcvf8HIF2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

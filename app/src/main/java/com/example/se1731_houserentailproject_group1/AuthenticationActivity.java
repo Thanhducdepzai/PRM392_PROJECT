@@ -22,7 +22,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private UserAdapter userAdapter;
     private EditText loginEmail;
     private EditText loginPassword;
-    private Button btnRedirectRegister;
+    private Button btnRedirectRegister,btnForgotPassword;
     private SessionManager sessionManager;
 
     @Override
@@ -48,6 +48,13 @@ public class AuthenticationActivity extends AppCompatActivity {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
             });
+
+        btnForgotPassword = findViewById(R.id.btnForgotPassword);
+        btnForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ForgotPasswordActivity.class);
+            startActivity(intent);
+        });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -68,6 +75,10 @@ public class AuthenticationActivity extends AppCompatActivity {
             return;
         }
         if (user != null) {
+            if (user.getRoles().equals("Lock")) {
+                Toast.makeText(this, "Tài khoản của bạn đã bị khóa!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             // Đăng nhập thành công
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
 

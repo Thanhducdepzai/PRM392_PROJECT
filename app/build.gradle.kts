@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services") version "4.4.2" apply true
 }
 
 android {
@@ -51,9 +52,14 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+
+    // Thêm phụ thuộc Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
     // Thêm phụ thuộc BCrypt
     implementation("org.mindrot:jbcrypt:0.4")
-    // Thêm phụ thuộc Mail
+
 
 
     // Thêm phụ thuộc Sms

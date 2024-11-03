@@ -11,13 +11,13 @@
     <!-- Main layout for the login screen -->
     <LinearLayout
         android:id="@+id/login_layout_main"
-        android:layout_width="360dp"
-        android:layout_height="400dp"
+        android:layout_width="371dp"
+        android:layout_height="555dp"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- "LOGIN" title -->
         <TextView
@@ -35,41 +35,63 @@
             android:id="@+id/loginEmail"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="20dp"
             android:drawablePadding="15dp"
             android:hint="Tài khoản"
-            android:layout_marginTop="30dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:inputType="textEmailAddress"
             android:maxLines="1"
-            android:textColor="@color/black"
-            />
+            android:textColor="@color/black" />
 
         <!-- Password input field -->
         <EditText
             android:id="@+id/loginPassword"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
             android:drawablePadding="15dp"
             android:hint="Mật khẩu"
             android:inputType="textPassword"
-            android:maxLines="1"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:maxLines="1" />
 
-            />
-
-        <!-- Register button -->
-        <Button
-            android:id="@+id/btnRedirectRegister"
+        <!-- Container for the Register and Forgot Password buttons -->
+        <LinearLayout
+            android:id="@+id/buttonContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_gravity="center"
-            android:layout_margin="10sp"
-            android:background="@android:color/transparent"
-            android:text="Bạn chưa có tài khoản?"
-            android:textColor="@color/black" />
+            android:layout_marginTop="10dp">
+
+            <!-- Register button -->
+            <Button
+                android:id="@+id/btnRedirectRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:text="Bạn chưa có tài khoản?"
+                android:textColor="@color/blue" />
+
+            <!-- Separator -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="|"
+                android:textColor="@color/black"
+                android:layout_marginHorizontal="8dp" /> <!-- Add some margin for spacing -->
+
+            <!-- Forgot password button -->
+            <Button
+                android:id="@+id/btnForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:text="Quên mật khẩu?"
+                android:textColor="@color/blue" />
+        </LinearLayout>
 
         <!-- Login button -->
         <Button
@@ -82,6 +104,5 @@
     </LinearLayout>
 
     <!-- Logo image above the login form -->
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

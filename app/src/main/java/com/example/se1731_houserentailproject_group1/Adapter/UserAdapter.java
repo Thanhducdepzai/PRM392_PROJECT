@@ -98,4 +98,28 @@ public class UserAdapter {
 
         return false; // Email chưa tồn tại
     }
+    //kiểm tra số điện thoại đã tồn tại chưa
+    public boolean checkPhoneNumberExist(String phoneNumber) {
+        String query = "SELECT * FROM users WHERE phone_number = ?";
+        Cursor cursor = database.rawQuery(query, new String[] {phoneNumber});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            cursor.close();
+            return true; // Số điện thoại đã tồn tại
+        }
+
+        return false; // Số điện thoại chưa tồn tại
+    }
+    // sửa lại mật khẩu người dùng
+    public long updateUserPassword(User user) {
+        // Mã hóa mật khẩu trước khi lưu
+        String passwordHash = hashPassword(user.getPasswordHash());
+        user.setPasswordHash(passwordHash); // Cập nhật mật khẩu đã mã hóa vào đối tượng User
+
+        ContentValues values = new ContentValues();
+        values.put("password_hash", user.getPasswordHash());
+        values.put("updated_at", user.getUpdatedAt());
+
+        return database.update("users", values, "id = ?", new String[] {String.valueOf(user.getId())});
+    }
 }
