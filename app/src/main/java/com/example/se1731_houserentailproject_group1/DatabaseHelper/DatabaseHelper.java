@@ -486,8 +486,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         try {
             cursor = db.rawQuery("SELECT * FROM users", null);
-
-            // Kiểm tra nếu cursor không rỗng và di chuyển đến hàng đầu tiên thành công
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     User user = new User(
@@ -500,8 +498,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             cursor.getString(cursor.getColumnIndexOrThrow("updated_at")),
                             cursor.getString(cursor.getColumnIndexOrThrow("Roles"))
                     );
-                    userList.add(user); // Thêm người dùng vào danh sách
-                } while (cursor.moveToNext()); // Di chuyển đến hàng tiếp theo
+                    userList.add(user);
+                } while (cursor.moveToNext());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -510,7 +508,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
-        return userList; // Trả về danh sách người dùng
+        return userList;
     }
     public void updateUserRole(int userId, String role) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -521,18 +519,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean isPasswordCorrect(String enteredPassword) {
-        // Fetch the current user's password hash
-        String storedPasswordHash = getUserPasswordHash(); // Ensure this method returns the stored password hash
-
-        // If the stored password hash is null, return false
+        String storedPasswordHash = getUserPasswordHash();
         if (storedPasswordHash == null) {
             return false;
         }
-
-        // Hash the entered password
         String hashedEnteredPassword = hashPassword(enteredPassword); // Implement this method to hash the password
 
-        // Compare the hashed entered password with the stored hash
         return storedPasswordHash.equals(hashedEnteredPassword);
     }
 
@@ -543,11 +535,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = null;
 
         try {
-            // Execute the query and log the action
             cursor = db.rawQuery(query, new String[]{String.valueOf(getCurrentUserId())});
             Log.d("DatabaseHelper", "Executing query: " + query + " with ID: " + getCurrentUserId());
 
-            // Check if cursor is not null and move to the first entry
             if (cursor != null && cursor.moveToFirst()) {
                 // Ensure the column exists
                 int columnIndex = cursor.getColumnIndex("password_hash");
@@ -564,28 +554,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.e("DatabaseHelper", "Error fetching password hash", e);
         } finally {
             if (cursor != null) {
-                cursor.close(); // Ensure cursor is closed to avoid memory leaks
+                cursor.close();
             }
         }
 
-        return passwordHash; // Return the password hash or null if not found
+        return passwordHash;
     }
 
 
     public void updatePassword(String newPassword) {
-        // Hash the new password before updating
-        String hashedNewPassword = hashPassword(newPassword); // Ensure this method hashes the password
 
-        // Update password in the database
-        String updateQuery = "UPDATE users SET password_hash = ? WHERE id = ?";
+        String hashedNewPassword = hashPassword(newPassword);
         SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("password_hash", hashedNewPassword);
+
+        int userId = getCurrentUserId();
         try {
-            db.execSQL(updateQuery, new Object[]{hashedNewPassword, getCurrentUserId()}); // Ensure getCurrentUserId() returns the correct user ID
+            int rowsAffected = db.update("users", values, "id = ?", new String[]{String.valueOf(userId)});
+            if (rowsAffected > 0) {
+                Log.d("DatabaseHelper", "Password updated successfully");
+            } else {
+                Log.d("DatabaseHelper", "No rows affected, check if the user ID is correct.");
+            }
         } catch (Exception e) {
             // Log the exception for debugging
             Log.e("DatabaseHelper", "Error updating password", e);
         }
     }
+
 
     private String hashPassword(String password) {
         try {
@@ -602,11 +599,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw new RuntimeException("Error hashing password", e);
         }
     }
+    public String getHashedPassword() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT password FROM users LIMIT 1", null); // Adjust query as needed
+        String hashedPassword = null;
+        if (cursor.moveToFirst()) {
+            hashedPassword = cursor.getString(0);
+        }
+        cursor.close();
+        return hashedPassword;
+    }
 
     private int getCurrentUserId() {
-        // Implement this method to return the current user's ID
-        // Example: return SharedPreferences or some static variable holding user ID
-        return 1; // Change this line as needed
+        return 1;
     }
 
 
