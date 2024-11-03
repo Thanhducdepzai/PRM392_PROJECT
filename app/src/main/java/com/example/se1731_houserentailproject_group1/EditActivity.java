@@ -229,12 +229,10 @@ public class EditActivity extends AppCompatActivity {
         values.put("unit_count", unitCount);
         values.put("property_type", type);
         values.put("owner_id", ownerId);
-
         // Add image to ContentValues only if it is available
         if (imageBase64 != null && !imageBase64.isEmpty()) {
             values.put("image_base64", imageBase64);
         }
-
         // Log ContentValues before saving
         Log.d(TAG, "ContentValues for Update: " + values.toString());
 
@@ -247,17 +245,14 @@ public class EditActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to update property", Toast.LENGTH_SHORT).show();
         }
     }
-
     private String encodeBitmapToBase64(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         byte[] byteArray = outputStream.toByteArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
-
     private Bitmap decodeBase64ToBitmap(String base64) {
         byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
     }
 }
-
