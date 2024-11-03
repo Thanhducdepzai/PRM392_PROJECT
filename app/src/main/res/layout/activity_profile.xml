@@ -7,8 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ProfileActivity">
+    <!--<include layout="@layout/toolbar"/> -->
 
-    <include layout="@layout/toolbar"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,6 +21,7 @@
             android:src="@mipmap/ic_avt"
             />
         <TextView
+            android:id="@+id/txfullname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
@@ -48,14 +49,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="First Name"
+                android:text="Full Name"
                 android:textStyle="bold"
                 android:textSize="18dp"
                 android:layout_marginLeft="5dp"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Phuong"
+                android:text="Hoang Thu Phuong"
                 android:textSize="18dp"
                 android:layout_marginLeft="10dp"/>
         </LinearLayout>
@@ -73,14 +74,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Last Name"
+                android:text="Dob"
                 android:textStyle="bold"
                 android:textSize="18dp"
                 android:layout_marginLeft="5dp"/>
             <TextView
+                android:id="@+id/tvPhoneNum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Hoang Thu"
+                android:text="0818165923"
                 android:textSize="18dp"
                 android:layout_marginLeft="10dp"/>
         </LinearLayout>
@@ -103,6 +105,7 @@
                 android:textSize="18dp"
                 android:layout_marginLeft="5dp"/>
             <TextView
+                android:id="@+id/tvEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Phuonghthe172196@fpt.edu.vn"
@@ -115,7 +118,8 @@
             android:layout_marginTop="90dp"
             android:gravity="center"
             android:orientation="vertical">
-            <TextView
+            <Button
+                android:id="@+id/btnEdit"
                 android:layout_width="200dp"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_btn"
@@ -123,11 +127,12 @@
                 android:gravity="center"
                 android:textStyle="bold"
                 android:textSize="18dp"
-                android:textColor="@color/blue"
+                android:textColor="@color/white"
                 android:padding="10dp"
                 android:drawableLeft="@drawable/ic_edit"
                 android:paddingLeft="10dp"/>
-            <TextView
+            <Button
+                android:id="@+id/btnChangePw"
                 android:layout_width="250dp"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_btn"
@@ -135,7 +140,7 @@
                 android:gravity="center"
                 android:textStyle="bold"
                 android:textSize="18dp"
-                android:textColor="@color/blue"
+                android:textColor="@color/white"
                 android:padding="10dp"
                 android:drawableLeft="@drawable/ic_lock"
                 android:paddingLeft="10dp"
