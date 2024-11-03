@@ -3,18 +3,13 @@ package com.example.se1731_houserentailproject_group1;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.se1731_houserentailproject_group1.Adapter.PropertyAdapter;
 import com.example.se1731_houserentailproject_group1.DatabaseHelper.DatabaseHelper;
 import com.example.se1731_houserentailproject_group1.Model.Property;
-import com.example.se1731_houserentailproject_group1.Model.PropertyImage;
 
 import java.util.List;
 
