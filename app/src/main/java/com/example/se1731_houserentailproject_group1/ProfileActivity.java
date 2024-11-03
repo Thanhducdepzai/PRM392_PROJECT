@@ -24,12 +24,17 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile);
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
         // Khởi tạo các TextView
         fullname = findViewById(R.id.tvFullName);
         phoneNum = findViewById(R.id.tvPhoneNum);
         email = findViewById(R.id.tvEmail);
         txfullname = findViewById(R.id.txfullname);
+        btnedit = findViewById(R.id.btnEdit);
+        btnChangePassword =findViewById(R.id.id_ChangePassword);
 
         sessionManager = new SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
@@ -46,5 +51,10 @@ public class ProfileActivity extends AppCompatActivity {
                 email.setText(user.getEmail());
             }
         }
+        btnChangePassword = findViewById(R.id.id_ChangePassword);
+        btnChangePassword.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
+        });
     }
 }
