@@ -14,6 +14,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.se1731_houserentailproject_group1.Adapter.UserAdapter;
+import com.example.se1731_houserentailproject_group1.AdminActivity.DashboardActivity;
 import com.example.se1731_houserentailproject_group1.Model.User;
 import com.example.se1731_houserentailproject_group1.Utils.SessionManager;
 
@@ -84,12 +85,12 @@ public class AuthenticationActivity extends AppCompatActivity {
 
             sessionManager.createSession(user.getRoles());
             if (user.getRoles().equals("Admin")) {
-//                Intent intent = new Intent(this, AdminActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(this, DashboardActivity.class);
+                startActivity(intent);
             }
             if(user.getRoles().equals("User")) {
                 {
-                    Intent intent = new Intent(this, MainActivity.class);
+                    Intent intent = new Intent(this, HomeActivity.class);
                     startActivity(intent);
                 }
             }

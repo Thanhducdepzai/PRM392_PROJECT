@@ -3,11 +3,16 @@ package com.example.se1731_houserentailproject_group1.Utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.example.se1731_houserentailproject_group1.Model.User;
+import com.google.gson.Gson;
+
 public class SessionManager {
     // Khai báo biến để lưu trữ SharedPreferences và Editor
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private Context context;
+    private Gson gson;
+    private static final String KEY_USER = "user";
 
     // Tên của SharedPreferences và các khóa để lưu trữ thông tin phiên làm việc
     private static final String PREF_NAME = "UserSession"; // Tên của SharedPreferences
@@ -21,6 +26,7 @@ public class SessionManager {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         // Khởi tạo Editor để chỉnh sửa SharedPreferences
         editor = sharedPreferences.edit();
+        gson = new Gson();
     }
 
     // Phương thức tạo phiên làm việc khi người dùng đăng nhập
@@ -51,5 +57,11 @@ public class SessionManager {
         editor.clear();
         // Áp dụng thay đổi
         editor.apply();
+    }
+
+    public User getUser() {
+        String userJson = sharedPreferences.getString(KEY_USER, null);
+        // Chuyển JSON thành đối tượng User
+        return gson.fromJson(userJson, User.class);
     }
 }
