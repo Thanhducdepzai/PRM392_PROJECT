@@ -29,6 +29,8 @@ public class ProfileActivity extends AppCompatActivity {
         phoneNum = findViewById(R.id.tvPhoneNum);
         email = findViewById(R.id.tvEmail);
         txfullname = findViewById(R.id.txfullname);
+        btnChangePassword = findViewById(R.id.id_ChangePassword);
+        btnedit = findViewById(R.id.btnEdit);
 
         sessionManager = new SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
@@ -45,6 +47,11 @@ public class ProfileActivity extends AppCompatActivity {
                 email.setText(user.getEmail());
             }
         }
+        btnChangePassword = findViewById(R.id.id_ChangePassword);
+        btnChangePassword.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
+        });
 
     }
 }
