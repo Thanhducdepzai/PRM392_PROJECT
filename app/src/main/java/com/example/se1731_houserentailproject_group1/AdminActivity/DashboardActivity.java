@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.se1731_houserentailproject_group1.HouseListActivity;
 import com.example.se1731_houserentailproject_group1.R;
 
 public class DashboardActivity extends AppCompatActivity {
@@ -24,7 +26,7 @@ public class DashboardActivity extends AppCompatActivity {
         btnHouseManagement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(DashboardActivity.this, HouseManagementActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, HouseListActivity.class);
                 startActivity(intent);
             }
         });
