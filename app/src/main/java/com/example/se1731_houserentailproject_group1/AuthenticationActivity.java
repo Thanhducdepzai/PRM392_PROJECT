@@ -62,7 +62,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         // Kiểm tra thông tin người dùng
         User user = userAdapter.getUserByEmailAndPassword(email, password);
-
+        sessionManager.createSession(user);
         // kiểm tra input
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();

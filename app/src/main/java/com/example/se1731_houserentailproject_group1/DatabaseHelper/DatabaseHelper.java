@@ -20,7 +20,7 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "houserental.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -110,7 +110,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Insert sample data
         db.execSQL("INSERT INTO users (full_name, email, password_hash, phone_number, created_at, updated_at, Roles) VALUES " +
-                "('John Doe', 'john.doe@example.com', 'password123', '1234567890', '2023-01-01', '2023-01-01', 'User')," +
+                "('John Doe', 'john.doe@example.com', '$2a$10$AXVAwE32Zs1jmxN/P3BZ1.m/KjqDQV0qXrjkHakQffiW7q/YcGSMe', '1234567890', '2023-01-01', '2023-01-01', 'User')," +
                 "('Jane Smith', 'jane.smith@example.com', 'password456', '0987654321', '2023-01-01', '2023-01-01', 'Admin')");
 
         db.execSQL("INSERT INTO properties (name, address, city, state, postal_code, main_phone, fax_number, unit_count, owner_id, property_type, image_base64) VALUES " +
