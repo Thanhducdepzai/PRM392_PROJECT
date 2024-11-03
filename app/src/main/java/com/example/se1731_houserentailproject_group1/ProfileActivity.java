@@ -24,10 +24,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_profile);
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
         // Khởi tạo các TextView
         fullname = findViewById(R.id.tvFullName);
         phoneNum = findViewById(R.id.tvPhoneNum);
@@ -51,7 +47,6 @@ public class ProfileActivity extends AppCompatActivity {
                 email.setText(user.getEmail());
             }
         }
-        btnChangePassword = findViewById(R.id.id_ChangePassword);
         btnChangePassword.setOnClickListener(v -> {
             Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
             startActivity(intent);

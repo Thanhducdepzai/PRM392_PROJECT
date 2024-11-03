@@ -135,7 +135,7 @@
                 android:drawableLeft="@drawable/ic_edit"
                 android:paddingLeft="10dp"/>
             <Button
-                android:id="@+id/btnChangePw"
+                android:id="@+id/id_ChangePassword"
                 android:layout_width="250dp"
                 android:layout_height="50dp"
                 android:background="@drawable/bg_btn"
