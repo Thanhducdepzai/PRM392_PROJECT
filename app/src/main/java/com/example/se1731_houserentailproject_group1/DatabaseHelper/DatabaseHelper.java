@@ -11,6 +11,9 @@ import com.example.se1731_houserentailproject_group1.Model.Property;
 import com.example.se1731_houserentailproject_group1.Model.PropertyImage;
 import com.example.se1731_houserentailproject_group1.Model.User;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -509,6 +512,97 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return userList; // Trả về danh sách người dùng
     }
+
+
+    public boolean isPasswordCorrect(String enteredPassword) {
+        // Fetch the current user's password hash
+        String storedPasswordHash = getUserPasswordHash(); // Ensure this method returns the stored password hash
+
+        // If the stored password hash is null, return false
+        if (storedPasswordHash == null) {
+            return false;
+        }
+
+        // Hash the entered password
+        String hashedEnteredPassword = hashPassword(enteredPassword); // Implement this method to hash the password
+
+        // Compare the hashed entered password with the stored hash
+        return storedPasswordHash.equals(hashedEnteredPassword);
+    }
+
+    public String getUserPasswordHash() {
+        String passwordHash = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT password_hash FROM users WHERE id = ?";
+        Cursor cursor = null;
+
+        try {
+            // Execute the query and log the action
+            cursor = db.rawQuery(query, new String[]{String.valueOf(getCurrentUserId())});
+            Log.d("DatabaseHelper", "Executing query: " + query + " with ID: " + getCurrentUserId());
+
+            // Check if cursor is not null and move to the first entry
+            if (cursor != null && cursor.moveToFirst()) {
+                // Ensure the column exists
+                int columnIndex = cursor.getColumnIndex("password_hash");
+                if (columnIndex != -1) {
+                    passwordHash = cursor.getString(columnIndex);
+                } else {
+                    Log.e("DatabaseHelper", "Column 'password_hash' not found");
+                }
+            } else {
+                Log.e("DatabaseHelper", "Cursor is null or empty");
+            }
+        } catch (Exception e) {
+            // Log the exception for debugging
+            Log.e("DatabaseHelper", "Error fetching password hash", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close(); // Ensure cursor is closed to avoid memory leaks
+            }
+        }
+
+        return passwordHash; // Return the password hash or null if not found
+    }
+
+
+    public void updatePassword(String newPassword) {
+        // Hash the new password before updating
+        String hashedNewPassword = hashPassword(newPassword); // Ensure this method hashes the password
+
+        // Update password in the database
+        String updateQuery = "UPDATE users SET password_hash = ? WHERE id = ?";
+        SQLiteDatabase db = this.getWritableDatabase();
+        try {
+            db.execSQL(updateQuery, new Object[]{hashedNewPassword, getCurrentUserId()}); // Ensure getCurrentUserId() returns the correct user ID
+        } catch (Exception e) {
+            // Log the exception for debugging
+            Log.e("DatabaseHelper", "Error updating password", e);
+        }
+    }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
+
+    private int getCurrentUserId() {
+        // Implement this method to return the current user's ID
+        // Example: return SharedPreferences or some static variable holding user ID
+        return 1; // Change this line as needed
+    }
+
 
 
 }

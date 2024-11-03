@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
+<!--    <uses-permission android:name="android.permission.SEND_SMS" />-->
 
     <application
         android:allowBackup="true"
@@ -16,11 +16,14 @@
         android:theme="@style/Theme.SE1731_HouseRentailProject_Group1"
         tools:targetApi="31">
         <activity
+            android:name=".ChangePasswordActivity"
+            android:exported="true" />
+        <activity
             android:name=".HomeActivity"
             android:exported="true" />
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".AddHouseActivity"
             android:exported="false" />
@@ -50,7 +53,7 @@
         </activity>
         <activity
             android:name=".AdminActivity.AccountManagementActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".AdminActivity.DashboardActivity"
             android:exported="true" />
