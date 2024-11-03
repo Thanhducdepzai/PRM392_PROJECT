@@ -509,6 +509,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return userList; // Trả về danh sách người dùng
     }
-
+    public void updateUserRole(int userId, String role) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("Roles", role);
+        db.update("users", values, "id = ?", new String[]{String.valueOf(userId)});
+        db.close();
+    }
 
 }
