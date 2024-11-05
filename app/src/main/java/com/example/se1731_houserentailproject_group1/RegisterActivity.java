@@ -3,7 +3,6 @@ package com.example.se1731_houserentailproject_group1;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.view.View;
@@ -34,6 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
     private UserAdapter userAdapter;
     private Button btnRedirectLogin;
     private String otp;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,19 +93,10 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        User user = createUser(fullName, email, password, phoneNumber);
+        user = createUser(fullName, email, password, phoneNumber);
         otp = generateOTP();
-        requestSmsPermissionAndSendOTP(phoneNumber, otp);
-
-        // Chuyển thông tin người dùng đến OTPActivity
-        Intent intent = new Intent(RegisterActivity.this, OTPActivity.class);
-        intent.putExtra("OTP", otp);
-        intent.putExtra("ActionType", "REGISTER");
-        intent.putExtra("User", user); // Chuyển thông tin người dùng
-        startActivity(intent);
-        finish();
+        requestSmsPermissionAndSendOTP(phoneNumber, otp);  // Gọi yêu cầu quyền
     }
-
 
     private boolean isInputValid(String fullName, String phoneNumber, String email, String password, String rePassword) {
         if (fullName.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
@@ -143,6 +134,7 @@ public class RegisterActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 100);
         } else {
             sendOTP(phone, otp);
+            redirectToOTPActivity();  // Chuyển ngay khi có quyền
         }
     }
 
@@ -170,11 +162,20 @@ public class RegisterActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        userAdapter.close();
+    private void redirectToOTPActivity() {
+        Intent intent = new Intent(RegisterActivity.this, OTPActivity.class);
+        intent.putExtra("OTP", otp);
+        intent.putExtra("ActionType", "REGISTER");
+        intent.putExtra("User", user); // Chuyển thông tin người dùng
+        startActivity(intent);
+        finish();
     }
+
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        userAdapter.close();
+//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -182,36 +183,10 @@ public class RegisterActivity extends AppCompatActivity {
         if (requestCode == 100) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 sendOTP(phoneNumberEditText.getText().toString().trim(), otp);
+                redirectToOTPActivity();  // Chuyển sau khi được cấp quyền
             } else {
-                showToast("Permission Denied!");
+                showToast("Quyền bị từ chối!");
             }
         }
     }
-
-
-//    private void sendOtpWithFirebase(String phoneNumber) {
-//        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(firebaseAuth)
-//                .setPhoneNumber(phoneNumber)
-//                .setTimeout(60L, TimeUnit.SECONDS)
-//                .setActivity(this)
-//                .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-//                    @Override
-//                    public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
-//                        signInWithPhoneAuthCredential(credential);
-//                    }
-//
-//                    @Override
-//                    public void onVerificationFailed(@NonNull FirebaseException e) {
-//                        Toast.makeText(RegisterActivity.this, "Lỗi xác thực: " + e.getMessage(), Toast.LENGTH_LONG).show();
-//                    }
-//
-//                    @Override
-//                    public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
-//                        RegisterActivity.this.verificationId = verificationId;
-//                        Toast.makeText(RegisterActivity.this, "OTP đã được gửi!", Toast.LENGTH_SHORT).show();
-//                    }
-//                })
-//                .build();
-//        PhoneAuthProvider.verifyPhoneNumber(options);
-//    }
 }
