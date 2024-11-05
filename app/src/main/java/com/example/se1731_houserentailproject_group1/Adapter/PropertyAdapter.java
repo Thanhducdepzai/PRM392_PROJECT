@@ -28,11 +28,15 @@ public class PropertyAdapter extends RecyclerView.Adapter<PropertyAdapter.Proper
     private List<Property> propertyList;
     private DatabaseHelper databaseHelper;
     private Context context;
+    private boolean isAdmin;
+    private int currentUserId;
 
-    public PropertyAdapter(List<Property> propertyList, DatabaseHelper databaseHelper, Context context) {
+    public PropertyAdapter(List<Property> propertyList, DatabaseHelper databaseHelper, Context context, boolean isAdmin, int currentUserId) {
         this.propertyList = propertyList;
         this.databaseHelper = databaseHelper;
         this.context = context;
+        this.isAdmin = isAdmin;
+        this.currentUserId = currentUserId;
     }
 
     @NonNull
@@ -65,26 +69,35 @@ public class PropertyAdapter extends RecyclerView.Adapter<PropertyAdapter.Proper
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         holder.imageBase64.setImageBitmap(decodedByte);
 
-        // Nút Edit
-        holder.editButton.setOnClickListener(v -> {
-            Intent intent = new Intent(context, EditActivity.class);
-            intent.putExtra("propertyId", property.getId());
-            context.startActivity(intent);
-        });
+        // Kiểm tra quyền Admin và chủ sở hữu
+        if (isAdmin || property.getOwnerId() == currentUserId) {
+            holder.editButton.setVisibility(View.VISIBLE);
+            holder.deleteButton.setVisibility(View.VISIBLE);
 
-        // Nút Delete
-        holder.deleteButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(context)
-                    .setTitle("Xác Nhận Xóa")
-                    .setMessage("Bạn có chắc chắn muốn xóa nhà này không?")
-                    .setPositiveButton("Có", (dialog, which) -> {
-                        databaseHelper.deleteProperty(property.getId());
-                        propertyList.remove(position);
-                        notifyItemRemoved(position);
-                    })
-                    .setNegativeButton("Không", null)
-                    .show();
-        });
+            // Nút Edit
+            holder.editButton.setOnClickListener(v -> {
+                Intent intent = new Intent(context, EditActivity.class);
+                intent.putExtra("propertyId", property.getId());
+                context.startActivity(intent);
+            });
+
+            // Nút Delete
+            holder.deleteButton.setOnClickListener(v -> {
+                new AlertDialog.Builder(context)
+                        .setTitle("Xác Nhận Xóa")
+                        .setMessage("Bạn có chắc chắn muốn xóa nhà này không?")
+                        .setPositiveButton("Có", (dialog, which) -> {
+                            databaseHelper.deleteProperty(property.getId());
+                            propertyList.remove(position);
+                            notifyItemRemoved(position);
+                        })
+                        .setNegativeButton("Không", null)
+                        .show();
+            });
+        } else {
+            holder.editButton.setVisibility(View.GONE);
+            holder.deleteButton.setVisibility(View.GONE);
+        }
     }
 
     @Override
