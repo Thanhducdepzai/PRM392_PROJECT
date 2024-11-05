@@ -44,6 +44,19 @@ public class UserAdapter {
         return database.insert("users", null, values);
     }
 
+    public boolean updateUser(User user) {
+        ContentValues values = new ContentValues();
+        values.put("full_name", user.getFullName());
+        values.put("phone_number", user.getPhoneNumber());
+        values.put("email", user.getEmail());
+
+        String whereClause = "id=?";
+        String[] whereArgs = { String.valueOf(user.getId()) };
+
+        int rowsUpdated = database.update("users", values, whereClause, whereArgs);
+        return rowsUpdated > 0;
+    }
+
     // Đăng nhập người dùng
     public User getUserByEmailAndPassword(String email, String password) {
         // Lấy người dùng theo email

@@ -518,28 +518,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public boolean isPasswordCorrect(String enteredPassword) {
-        String storedPasswordHash = getUserPasswordHash();
-        if (storedPasswordHash == null) {
-            return false;
-        }
-        String hashedEnteredPassword = hashPassword(enteredPassword); // Implement this method to hash the password
 
-        return storedPasswordHash.equals(hashedEnteredPassword);
-    }
-
-    public String getUserPasswordHash() {
+    public String getUserPasswordHash(int userId) {
         String passwordHash = null;
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT password_hash FROM users WHERE id = ?";
         Cursor cursor = null;
 
         try {
-            cursor = db.rawQuery(query, new String[]{String.valueOf(getCurrentUserId())});
-            Log.d("DatabaseHelper", "Executing query: " + query + " with ID: " + getCurrentUserId());
+            cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+            Log.d("DatabaseHelper", "Executing query: " + query + " with ID: " + userId);
 
             if (cursor != null && cursor.moveToFirst()) {
-                // Ensure the column exists
                 int columnIndex = cursor.getColumnIndex("password_hash");
                 if (columnIndex != -1) {
                     passwordHash = cursor.getString(columnIndex);
@@ -550,7 +540,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Log.e("DatabaseHelper", "Cursor is null or empty");
             }
         } catch (Exception e) {
-            // Log the exception for debugging
             Log.e("DatabaseHelper", "Error fetching password hash", e);
         } finally {
             if (cursor != null) {
@@ -561,15 +550,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return passwordHash;
     }
 
-
-    public void updatePassword(String newPassword) {
-
-        String hashedNewPassword = hashPassword(newPassword);
+    public void updatePassword(int userId, String newPassword) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put("password_hash", hashedNewPassword);
+        values.put("password_hash", newPassword);
 
-        int userId = getCurrentUserId();
         try {
             int rowsAffected = db.update("users", values, "id = ?", new String[]{String.valueOf(userId)});
             if (rowsAffected > 0) {
@@ -578,7 +563,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Log.d("DatabaseHelper", "No rows affected, check if the user ID is correct.");
             }
         } catch (Exception e) {
-            // Log the exception for debugging
             Log.e("DatabaseHelper", "Error updating password", e);
         }
     }
@@ -599,9 +583,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             throw new RuntimeException("Error hashing password", e);
         }
     }
+
     public String getHashedPassword() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT password FROM users LIMIT 1", null); // Adjust query as needed
+        Cursor cursor = db.rawQuery("SELECT password_hash FROM users LIMIT 1", null); // Adjust query as needed
         String hashedPassword = null;
         if (cursor.moveToFirst()) {
             hashedPassword = cursor.getString(0);

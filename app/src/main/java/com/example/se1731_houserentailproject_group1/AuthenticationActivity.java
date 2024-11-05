@@ -23,7 +23,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private UserAdapter userAdapter;
     private EditText loginEmail;
     private EditText loginPassword;
-    private Button btnRedirectRegister,btnForgotPassword;
+    private Button btnRedirectRegister, btnForgotPassword;
     private SessionManager sessionManager;
 
     @Override
@@ -32,30 +32,35 @@ public class AuthenticationActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_authentication);
 
-        // Khởi tạo UserAdapter
+        // Initialize UserAdapter and open database
         userAdapter = new UserAdapter(this);
         userAdapter.open();
 
-        // Ánh xạ các EditText
+        // Bind UI components
         loginEmail = findViewById(R.id.loginEmail);
         loginPassword = findViewById(R.id.loginPassword);
 
-        // Thiết lập sự kiện nhấn nút đăng nhập
+        // Set up login button click event
         Button btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(this::handleLogin);
+
         sessionManager = new SessionManager(this);
+
+        // Set up redirect to Register page
         btnRedirectRegister = findViewById(R.id.btnRedirectRegister);
         btnRedirectRegister.setOnClickListener(v -> {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
-            });
+        });
 
+        // Set up redirect to Forgot Password page
         btnForgotPassword = findViewById(R.id.btnForgotPassword);
         btnForgotPassword.setOnClickListener(v -> {
             Intent intent = new Intent(this, ForgotPasswordActivity.class);
             startActivity(intent);
         });
 
+        // Adjust padding for edge-to-edge display
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -67,35 +72,36 @@ public class AuthenticationActivity extends AppCompatActivity {
         String email = loginEmail.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
 
-        // Kiểm tra thông tin người dùng
-        User user = userAdapter.getUserByEmailAndPassword(email, password);
-
-        // kiểm tra input
+        // Input validation
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Check user credentials
+        User user = userAdapter.getUserByEmailAndPassword(email, password);
+
         if (user != null) {
             if (user.getRoles().equals("Lock")) {
                 Toast.makeText(this, "Tài khoản của bạn đã bị khóa!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            // Đăng nhập thành công
+
+            // Successful login
             Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
 
-            sessionManager.createSession(user.getRoles());
+            // Store user session
+            sessionManager.createSession(user);
+
+            Intent intent;
             if (user.getRoles().equals("Admin")) {
-                Intent intent = new Intent(this, DashboardActivity.class);
-                intent.putExtra("currentUser", user);
-                startActivity(intent);
+                intent = new Intent(this, DashboardActivity.class);
+            } else {
+                intent = new Intent(this, HomeActivity.class);
             }
-            if(user.getRoles().equals("User")) {
-                Intent intent = new Intent(this, HomeActivity.class);
-                intent.putExtra("currentUser", user);
-                startActivity(intent);
-            }
+            startActivity(intent);
         } else {
-            // Thông báo lỗi
+            // Login failed
             Toast.makeText(this, "Thông tin đăng nhập không đúng. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -103,6 +109,6 @@ public class AuthenticationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        userAdapter.close(); // Đảm bảo đóng cơ sở dữ liệu
+        userAdapter.close(); // Ensure database is closed
     }
 }

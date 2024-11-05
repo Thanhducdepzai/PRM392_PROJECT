@@ -16,6 +16,7 @@ import com.example.se1731_houserentailproject_group1.Adapter.HomeAdapter;
 import com.example.se1731_houserentailproject_group1.DatabaseHelper.DatabaseHelper;
 import com.example.se1731_houserentailproject_group1.Model.Property;
 import com.example.se1731_houserentailproject_group1.Model.User;
+import com.example.se1731_houserentailproject_group1.Utils.SessionManager;
 
 import java.util.List;
 
@@ -24,28 +25,33 @@ public class HomeActivity extends AppCompatActivity {
     private HomeAdapter homeAdapter;
     private DatabaseHelper databaseHelper;
     private User currentUser;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        currentUser = (User) getIntent().getSerializableExtra("currentUser");
+        // Initialize SessionManager and get current user
+        sessionManager = new SessionManager(this);
+        currentUser = sessionManager.getUser();
 
+        // Check if the user is logged in
+        if (currentUser == null) {
+            Toast.makeText(this, "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Initialize UI components and load properties
         databaseHelper = new DatabaseHelper(this);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Load the properties list
         loadProperties();
 
-        // Set click listener for profile icon
+        // Set up UI event listeners
         findViewById(R.id.profileIcon).setOnClickListener(v -> goToProfile());
-
-        // Set click listener for logout text
         findViewById(R.id.logoutText).setOnClickListener(v -> logout());
-
-        // Set click listener for "Xem danh sách nhà" button
         findViewById(R.id.viewHouseListButton).setOnClickListener(v -> goToHouseList());
     }
 
@@ -58,25 +64,23 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadProperties(); // Refresh the list after returning from detail page
+        loadProperties(); // Refresh list when returning from another activity
     }
 
-    // Method to navigate to Profile Activity
+    // Navigate to Profile Activity
     private void goToProfile() {
         Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
-        intent.putExtra("currentUser", currentUser);
         startActivity(intent);
     }
 
-    // Method to handle logout logic
+    // Handle logout logic
     private void logout() {
-        // Implement your logout logic here, e.g., clearing user session
-        finish(); // For simplicity, finish this activity to log out
+        sessionManager.logout(); // Clear session data
+        finish(); // Close activity to "log out" user
     }
 
-    // Method to navigate to House List Activity
+    // Navigate to House List Activity
     private void goToHouseList() {
-        // Đảm bảo currentUser không null trước khi truyền
         if (currentUser != null) {
             Intent intent = new Intent(HomeActivity.this, HouseListActivity.class);
             intent.putExtra("currentUser", currentUser);
@@ -85,7 +89,7 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(this, "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
             finish();
         }
-
     }
 }
+
 

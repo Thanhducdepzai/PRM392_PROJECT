@@ -41,7 +41,12 @@ public class HouseListActivity extends AppCompatActivity {
 
         // Retrieve current user and check admin status
         currentUser = (User) getIntent().getSerializableExtra("currentUser"); // Assume User is passed from the login or main activity
-        isAdmin = currentUser != null && currentUser.isAdmin();
+        if (currentUser == null) {
+            Toast.makeText(this, "User not found. Please log in again.", Toast.LENGTH_SHORT).show();
+            finish();
+            return; // Exit if currentUser is null
+        }
+        isAdmin = currentUser.isAdmin();
 
         // Initialize search field
         searchField = findViewById(R.id.search_field);
@@ -79,8 +84,11 @@ public class HouseListActivity extends AppCompatActivity {
         // Load all properties from the database and store them in allProperties list
         allProperties = databaseHelper.getAllProperties();
 
+        // Ensure currentUser is valid before using its ID
+        int userId = currentUser != null ? currentUser.getId() : -1;
+
         // Create adapter with additional parameters for permissions
-        propertyAdapter = new PropertyAdapter(allProperties, databaseHelper, this, isAdmin, currentUser.getId());
+        propertyAdapter = new PropertyAdapter(allProperties, databaseHelper, this, isAdmin, userId);
         recyclerView.setAdapter(propertyAdapter);
     }
 
@@ -104,3 +112,4 @@ public class HouseListActivity extends AppCompatActivity {
         loadProperties(); // Refresh the list after returning to this activity
     }
 }
+
