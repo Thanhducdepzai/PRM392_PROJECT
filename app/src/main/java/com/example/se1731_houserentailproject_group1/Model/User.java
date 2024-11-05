@@ -12,6 +12,10 @@ public class User implements Serializable {
     private String updatedAt;
     private String roles;
 
+    public boolean isAdmin() {
+        return this.roles.equals("Admin");
+    }
+
     public User(int id, String fullName) {
         this.id = id;
         this.fullName = fullName;

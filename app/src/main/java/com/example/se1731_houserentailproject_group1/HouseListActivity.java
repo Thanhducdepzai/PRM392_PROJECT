@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.se1731_houserentailproject_group1.Adapter.PropertyAdapter;
 import com.example.se1731_houserentailproject_group1.DatabaseHelper.DatabaseHelper;
 import com.example.se1731_houserentailproject_group1.Model.Property;
+import com.example.se1731_houserentailproject_group1.Model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class HouseListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
@@ -24,6 +26,8 @@ public class HouseListActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
     private EditText searchField;
     private List<Property> allProperties;
+    private User currentUser;
+    private boolean isAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,10 @@ public class HouseListActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Retrieve current user and check admin status
+        currentUser = (User) getIntent().getSerializableExtra("currentUser"); // Assume User is passed from the login or main activity
+        isAdmin = currentUser != null && currentUser.isAdmin();
 
         // Initialize search field
         searchField = findViewById(R.id.search_field);
@@ -62,6 +70,7 @@ public class HouseListActivity extends AppCompatActivity {
         // Add button listener for adding a new property
         findViewById(R.id.add_button).setOnClickListener(v -> {
             Intent intent = new Intent(HouseListActivity.this, AddHouseActivity.class);
+            intent.putExtra("ownerId", currentUser.getId()); // Pass current user's ID as owner
             startActivity(intent);
         });
     }
@@ -69,7 +78,9 @@ public class HouseListActivity extends AppCompatActivity {
     private void loadProperties() {
         // Load all properties from the database and store them in allProperties list
         allProperties = databaseHelper.getAllProperties();
-        propertyAdapter = new PropertyAdapter(allProperties, databaseHelper, this);
+
+        // Create adapter with additional parameters for permissions
+        propertyAdapter = new PropertyAdapter(allProperties, databaseHelper, this, isAdmin, currentUser.getId());
         recyclerView.setAdapter(propertyAdapter);
     }
 
@@ -83,7 +94,7 @@ public class HouseListActivity extends AppCompatActivity {
         }
 
         // Update RecyclerView with the filtered list
-        propertyAdapter = new PropertyAdapter(filteredList, databaseHelper, this);
+        propertyAdapter = new PropertyAdapter(filteredList, databaseHelper, this, isAdmin, currentUser.getId());
         recyclerView.setAdapter(propertyAdapter);
     }
 

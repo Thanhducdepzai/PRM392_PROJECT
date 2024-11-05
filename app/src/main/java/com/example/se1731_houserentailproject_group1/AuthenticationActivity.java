@@ -86,15 +86,14 @@ public class AuthenticationActivity extends AppCompatActivity {
             sessionManager.createSession(user.getRoles());
             if (user.getRoles().equals("Admin")) {
                 Intent intent = new Intent(this, DashboardActivity.class);
+                intent.putExtra("currentUser", user);
                 startActivity(intent);
             }
             if(user.getRoles().equals("User")) {
-                {
-                    Intent intent = new Intent(this, HomeActivity.class);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.putExtra("currentUser", user);
+                startActivity(intent);
             }
-
         } else {
             // Thông báo lỗi
             Toast.makeText(this, "Thông tin đăng nhập không đúng. Vui lòng thử lại.", Toast.LENGTH_SHORT).show();
