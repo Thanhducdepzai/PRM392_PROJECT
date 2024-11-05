@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import java.util.List;
 public class HouseDetailActivity extends AppCompatActivity {
     private TextView propertyName, propertyAddress, propertyCity, propertyState, propertyPostalCode,
             propertyPhone, propertyFax, propertyOwner, propertyUnit, propertyType;
+    Button btnContactOwner;
     private ImageView propertyImage;
     private DatabaseHelper databaseHelper;
     private int propertyId;
@@ -39,6 +41,12 @@ public class HouseDetailActivity extends AppCompatActivity {
 
         initializeViews();
         loadPropertyDetails();
+
+        btnContactOwner.setOnClickListener(view -> {
+            Intent intent = new Intent(HouseDetailActivity.this, ViewHouseLordActivity.class);
+            intent.putExtra("ownerId", propertyId);
+            startActivity(intent);
+        });
     }
 
     private void initializeViews() {
@@ -53,6 +61,7 @@ public class HouseDetailActivity extends AppCompatActivity {
         propertyUnit = findViewById(R.id.property_unit);
         propertyType = findViewById(R.id.property_type);
         propertyImage = findViewById(R.id.property_image);
+        btnContactOwner = findViewById(R.id.contact_button);
     }
 
     private void loadPropertyDetails() {

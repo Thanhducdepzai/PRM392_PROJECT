@@ -40,40 +40,40 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
+        setupWindowInsets();
+
+        userAdapter = new UserAdapter(this);
+        userAdapter.open();
+
+        initializeViews();
+        setupButtonListeners();
+    }
+
+    private void setupWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
 
-        // Khởi tạo UserAdapter
-        userAdapter = new UserAdapter(this);
-        userAdapter.open();
-
-        // Khởi tạo các EditText
+    private void initializeViews() {
         fullNameEditText = findViewById(R.id.fullName);
         phoneNumberEditText = findViewById(R.id.phoneNumber);
         emailEditText = findViewById(R.id.loginEmail);
         passwordEditText = findViewById(R.id.Password);
         rePasswordEditText = findViewById(R.id.rePassword);
-
-        // Thiết lập sự kiện cho nút Đăng ký
-        Button btnRegister = findViewById(R.id.btnLogin);
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerUser();
-            }
-        });
-
         btnRedirectLogin = findViewById(R.id.btnRedirectLogin);
-        btnRedirectLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(RegisterActivity.this, AuthenticationActivity.class);
-                startActivity(intent);
-                finish();
-            }
+    }
+
+    private void setupButtonListeners() {
+        Button btnRegister = findViewById(R.id.btnLogin);
+        btnRegister.setOnClickListener(v -> registerUser());
+
+        btnRedirectLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, AuthenticationActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 
@@ -84,59 +84,64 @@ public class RegisterActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
         String rePassword = rePasswordEditText.getText().toString().trim();
 
-        // Kiểm tra mật khẩu
-        if (!password.equals(rePassword)) {
-            Toast.makeText(this, "Mật khẩu không khớp!", Toast.LENGTH_SHORT).show();
+        if (!isInputValid(fullName, phoneNumber, email, password, rePassword)) {
             return;
         }
 
-        if (fullName.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+        if (userAdapter.checkEmailExist(email)) {
+            showToast("Email đã tồn tại!");
             return;
+        }
+
+        User user = createUser(fullName, email, password, phoneNumber);
+        otp = generateOTP();
+        requestSmsPermissionAndSendOTP(phoneNumber, otp);
+
+        // Chuyển thông tin người dùng đến OTPActivity
+        Intent intent = new Intent(RegisterActivity.this, OTPActivity.class);
+        intent.putExtra("OTP", otp);
+        intent.putExtra("ActionType", "REGISTER");
+        intent.putExtra("User", user); // Chuyển thông tin người dùng
+        startActivity(intent);
+        finish();
+    }
+
+
+    private boolean isInputValid(String fullName, String phoneNumber, String email, String password, String rePassword) {
+        if (fullName.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
+            showToast("Vui lòng nhập đầy đủ thông tin!");
+            return false;
         }
         if (phoneNumber.length() != 10) {
-            Toast.makeText(this, "Số điện thoại phải có 10 chữ số!", Toast.LENGTH_SHORT).show();
-            return;
+            showToast("Số điện thoại phải có 10 chữ số!");
+            return false;
         }
         if (!email.contains("@")) {
-            Toast.makeText(this, "Email không hợp lệ!", Toast.LENGTH_SHORT).show();
-            return;
+            showToast("Email không hợp lệ!");
+            return false;
         }
-
-        // Kiểm tra email đã tồn tại chưa
-        if (userAdapter.checkEmailExist(email)) {
-            Toast.makeText(this, "Email đã tồn tại!", Toast.LENGTH_SHORT).show();
-            return;
+        if (!password.equals(rePassword)) {
+            showToast("Mật khẩu không khớp!");
+            return false;
         }
+        return true;
+    }
 
-        // Tạo đối tượng User
+    private User createUser(String fullName, String email, String password, String phoneNumber) {
         User user = new User();
         user.setFullName(fullName);
         user.setEmail(email);
-        user.setPasswordHash(password); // Mật khẩu sẽ được mã hóa trong UserAdapter
+        user.setPasswordHash(password);
         user.setPhoneNumber(phoneNumber);
         user.setCreatedAt(getCurrentTimestamp());
         user.setUpdatedAt(getCurrentTimestamp());
-
-        // Đăng ký người dùng
-        long result = userAdapter.registerUser(user);
-        if (result != -1) {
-            Toast.makeText(this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-            // Gửi OTP đến số điện thoại của người dùng
-            otp = generateOTP();
-            requestSmsPermissionAndSendOTP(phoneNumber, otp);
-        } else {
-            Toast.makeText(this, "Đăng ký thất bại. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
-        }
+        return user;
     }
 
     private void requestSmsPermissionAndSendOTP(String phone, String otp) {
-        // Kiểm tra và yêu cầu quyền SEND_SMS
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            // Nếu quyền chưa được cấp, yêu cầu quyền
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 100);
         } else {
-            // Nếu quyền đã được cấp, gửi OTP
             sendOTP(phone, otp);
         }
     }
@@ -150,21 +155,25 @@ public class RegisterActivity extends AppCompatActivity {
         return sdf.format(new Date());
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        userAdapter.close();
-    }
-
     private void sendOTP(String phone, String otp) {
         try {
             SmsManager smsManager = SmsManager.getDefault();
             ArrayList<String> parts = smsManager.divideMessage(otp + " là mã OTP của bạn.");
             smsManager.sendMultipartTextMessage(phone, null, parts, null, null);
-            Toast.makeText(this, "SMS đã được gửi thành công!", Toast.LENGTH_SHORT).show();
+            showToast("SMS đã được gửi thành công!");
         } catch (Exception e) {
-            Toast.makeText(this, "Lỗi khi gửi SMS: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            showToast("Lỗi khi gửi SMS: " + e.getMessage());
         }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        userAdapter.close();
     }
 
     @Override
@@ -172,11 +181,37 @@ public class RegisterActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Nếu quyền được cấp, gọi lại sendOTP với số điện thoại và OTP đã tạo
                 sendOTP(phoneNumberEditText.getText().toString().trim(), otp);
             } else {
-                Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show();
+                showToast("Permission Denied!");
             }
         }
     }
+
+
+//    private void sendOtpWithFirebase(String phoneNumber) {
+//        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(firebaseAuth)
+//                .setPhoneNumber(phoneNumber)
+//                .setTimeout(60L, TimeUnit.SECONDS)
+//                .setActivity(this)
+//                .setCallbacks(new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+//                    @Override
+//                    public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
+//                        signInWithPhoneAuthCredential(credential);
+//                    }
+//
+//                    @Override
+//                    public void onVerificationFailed(@NonNull FirebaseException e) {
+//                        Toast.makeText(RegisterActivity.this, "Lỗi xác thực: " + e.getMessage(), Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void onCodeSent(@NonNull String verificationId, @NonNull PhoneAuthProvider.ForceResendingToken token) {
+//                        RegisterActivity.this.verificationId = verificationId;
+//                        Toast.makeText(RegisterActivity.this, "OTP đã được gửi!", Toast.LENGTH_SHORT).show();
+//                    }
+//                })
+//                .build();
+//        PhoneAuthProvider.verifyPhoneNumber(options);
+//    }
 }

@@ -1,6 +1,8 @@
 package com.example.se1731_houserentailproject_group1.Model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private int id;
     private String fullName;
     private String email;

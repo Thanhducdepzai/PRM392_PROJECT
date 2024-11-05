@@ -23,7 +23,7 @@ public class AuthenticationActivity extends AppCompatActivity {
     private UserAdapter userAdapter;
     private EditText loginEmail;
     private EditText loginPassword;
-    private Button btnRedirectRegister;
+    private Button btnRedirectRegister,btnForgotPassword;
     private SessionManager sessionManager;
 
     @Override
@@ -49,6 +49,13 @@ public class AuthenticationActivity extends AppCompatActivity {
             Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
             });
+
+        btnForgotPassword = findViewById(R.id.btnForgotPassword);
+        btnForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ForgotPasswordActivity.class);
+            startActivity(intent);
+        });
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -62,7 +69,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         // Kiểm tra thông tin người dùng
         User user = userAdapter.getUserByEmailAndPassword(email, password);
-        sessionManager.createSession(user);
+
         // kiểm tra input
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
@@ -83,7 +90,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
             if(user.getRoles().equals("User")) {
                 {
-                    Intent intent = new Intent(this, HouseListActivity.class);
+                    Intent intent = new Intent(this, HomeActivity.class);
                     startActivity(intent);
                 }
             }

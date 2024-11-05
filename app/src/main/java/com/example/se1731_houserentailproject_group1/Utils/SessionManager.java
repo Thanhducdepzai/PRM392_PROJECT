@@ -28,18 +28,6 @@ public class SessionManager {
         editor = sharedPreferences.edit();
         gson = new Gson();
     }
-    public void createSession(User user) {
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-        // Chuyển đối tượng User thành chuỗi JSON
-        String userJson = gson.toJson(user);
-        editor.putString(KEY_USER, userJson);
-        editor.apply();
-    }
-    public User getUser() {
-        String userJson = sharedPreferences.getString(KEY_USER, null);
-        // Chuyển JSON thành đối tượng User
-        return gson.fromJson(userJson, User.class);
-    }
 
     // Phương thức tạo phiên làm việc khi người dùng đăng nhập
     public void createSession(String userType) {
@@ -69,5 +57,11 @@ public class SessionManager {
         editor.clear();
         // Áp dụng thay đổi
         editor.apply();
+    }
+
+    public User getUser() {
+        String userJson = sharedPreferences.getString(KEY_USER, null);
+        // Chuyển JSON thành đối tượng User
+        return gson.fromJson(userJson, User.class);
     }
 }
