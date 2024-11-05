@@ -96,8 +96,10 @@ public class AuthenticationActivity extends AppCompatActivity {
             Intent intent;
             if (user.getRoles().equals("Admin")) {
                 intent = new Intent(this, DashboardActivity.class);
+                intent.putExtra("currentUser", user);
             } else {
                 intent = new Intent(this, HomeActivity.class);
+                intent.putExtra("currentUser", user);
             }
             startActivity(intent);
         } else {
