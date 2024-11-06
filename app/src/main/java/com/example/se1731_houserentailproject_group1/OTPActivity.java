@@ -21,13 +21,16 @@ public class OTPActivity extends AppCompatActivity {
     private EditText otpEditText;
     private String generatedOtp; // Mã OTP được tạo và gửi cho người dùng
     private UserAdapter userAdapter;
+    private User resetUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_otpactivity); // Đảm bảo rằng bạn đã đặt tên tệp XML đúng
-
         setupWindowInsets();
+
+        resetUser = (User) getIntent().getSerializableExtra("user");
+
         userAdapter = new UserAdapter(this);
         userAdapter.open();
         otpEditText = findViewById(R.id.otp_input);
@@ -60,9 +63,9 @@ public class OTPActivity extends AppCompatActivity {
             showToast("Mã OTP xác thực thành công!");
 
             // Get the action type from the intent
-            String actionType = getIntent().getStringExtra("ActionType");
+            String actionType = (String) getIntent().getSerializableExtra("ActionType");
 
-            if ("REGISTER".equals(actionType)) {
+            if ("REGISTER".equalsIgnoreCase(actionType)) {
                 // Lưu thông tin người dùng vào cơ sở dữ liệu
                 if (userAdapter.registerUser(user) != -1) {
                     showToast("Đăng ký thành công!");
@@ -72,11 +75,12 @@ public class OTPActivity extends AppCompatActivity {
                 } else {
                     showToast("Đăng ký thất bại. Vui lòng thử lại!");
                 }
-            } else if ("RESET_PASSWORD".equals(actionType)) {
+            } else if ("RESET_PASSWORD".equalsIgnoreCase(actionType)) {
                 // Cập nhật mật khẩu cho người dùng
-                if (userAdapter.updateUserPassword(user) != -1) {
+                if (resetUser != null) {
                     showToast("Đặt lại mật khẩu thành công!");
-                    Intent intent = new Intent(OTPActivity.this, ResetPasswordActivity.class); // Chuyển hướng đến trang đăng nhập
+                    Intent intent = new Intent(OTPActivity.this, ResetPasswordActivity.class);
+                    intent.putExtra("user", resetUser);
                     startActivity(intent);
                     finish();
                 } else {

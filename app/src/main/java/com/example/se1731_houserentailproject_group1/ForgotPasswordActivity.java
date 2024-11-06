@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.se1731_houserentailproject_group1.Adapter.UserAdapter;
+import com.example.se1731_houserentailproject_group1.Model.User;
 import com.example.se1731_houserentailproject_group1.Utils.SendOtp;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
@@ -48,21 +49,24 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String phone = etPhoneNumber.getText().toString().trim();
                 if (phone.isEmpty()) {
-
                     Toast.makeText(ForgotPasswordActivity.this, "Vui lòng nhập số điện thoại!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if (userAdapter.checkPhoneNumberExist(phone)) {
+                User user = userAdapter.getUserByPhoneNumber(phone);
+                if (user != null) {
                     String otp = SendOtp.generateOTP(); // Tạo mã OTP
                     SendOtp.sendOTP(ForgotPasswordActivity.this, phone, otp);
+
+                    // Chuyển sang OTPActivity và truyền thông tin user
                     Intent intent = new Intent(ForgotPasswordActivity.this, OTPActivity.class);
+                    intent.putExtra("user", user); // Truyền User object
                     intent.putExtra("OTP", otp);
                     intent.putExtra("ActionType", "RESET_PASSWORD");
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(ForgotPasswordActivity.this, "số điện thoại không tồn tại!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ForgotPasswordActivity.this, "Số điện thoại không tồn tại!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -82,6 +86,4 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         super.onDestroy();
         userAdapter.close();
     }
-
-
 }

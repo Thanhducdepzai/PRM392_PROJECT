@@ -94,6 +94,28 @@ public class UserAdapter {
         return null; // Người dùng không tồn tại
     }
 
+    public User getUserByPhoneNumber(String phoneNumber) {
+        String query = "SELECT * FROM users WHERE phone_number = ?";
+        Cursor cursor = database.rawQuery(query, new String[]{phoneNumber});
+
+        User user = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User(
+                    cursor.getInt(0), // id
+                    cursor.getString(1), // full_name
+                    cursor.getString(2), // email
+                    cursor.getString(3), // password_hash
+                    cursor.getString(4), // phone_number
+                    cursor.getString(5), // created_at
+                    cursor.getString(6), // updated_at
+                    cursor.getString(7) // roles
+            );
+            cursor.close();
+        }
+        return user; // Trả về null nếu không tìm thấy người dùng
+    }
+
+
     // Mã hóa mật khẩu
     private String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
