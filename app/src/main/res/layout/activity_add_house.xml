@@ -63,13 +63,6 @@
         android:inputType="number"
         android:hint="Unit Count" />
 
-    <!-- Owner Spinner -->
-    <Spinner
-        android:id="@+id/spinnerOwner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Select Owner" />
-
     <!-- Property Type Input -->
     <EditText
         android:id="@+id/etPropertyType"

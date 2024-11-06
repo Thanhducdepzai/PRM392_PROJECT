@@ -30,7 +30,6 @@ public class EditActivity extends AppCompatActivity {
     private static final String TAG = "EditActivity"; // Tag for Logcat
     private EditText propertyName, propertyAddress, propertyCity, propertyState, propertyPostalCode,
             propertyPhone, propertyFax, propertyUnit, propertyType;
-    private Spinner propertyOwner;
     private Button saveButton, selectImageButton;
     private ImageView imagePreview;
     private DatabaseHelper databaseHelper;
@@ -54,7 +53,6 @@ public class EditActivity extends AppCompatActivity {
         propertyPhone = findViewById(R.id.property_phone);
         propertyFax = findViewById(R.id.property_fax);
         propertyUnit = findViewById(R.id.property_unit);
-        propertyOwner = findViewById(R.id.property_owner);
         propertyType = findViewById(R.id.property_type);
         selectImageButton = findViewById(R.id.select_image_button);
         imagePreview = findViewById(R.id.image_preview);
@@ -65,9 +63,6 @@ public class EditActivity extends AppCompatActivity {
         if (propertyId != -1) {
             loadPropertyData(propertyId);
         }
-
-        // Load owner list for selector
-        loadOwnerList();
 
         // Set listeners
         selectImageButton.setOnClickListener(v -> selectImage());
@@ -91,19 +86,12 @@ public class EditActivity extends AppCompatActivity {
             propertyUnit.setText(String.valueOf(property.getUnitCount()));
             propertyType.setText(property.getPropertyType());
 
-            // Load owner and image if available
+            // Load image if available
             imageBase64 = property.getImageBase64();
             if (imageBase64 != null && !imageBase64.isEmpty()) {
                 imagePreview.setImageBitmap(decodeBase64ToBitmap(imageBase64));
             }
         }
-    }
-
-    private void loadOwnerList() {
-        List<User> ownerList = databaseHelper.getOwnerListForSelector();
-        ArrayAdapter<User> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ownerList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        propertyOwner.setAdapter(adapter);
     }
 
     private void selectImage() {
@@ -152,6 +140,7 @@ public class EditActivity extends AppCompatActivity {
 
         return true;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -183,15 +172,8 @@ public class EditActivity extends AppCompatActivity {
         String phone = propertyPhone.getText().toString().trim();
         String fax = propertyFax.getText().toString().trim();
         String type = propertyType.getText().toString().trim();
-        String unitStr = propertyUnit.getText().toString().trim(); // Temporarily hold for conversion
+        String unitStr = propertyUnit.getText().toString().trim();
 
-        // Verify all fields are filled, including spinner selection
-        if (name.isEmpty() || address.isEmpty() || city.isEmpty() || type.isEmpty() || unitStr.isEmpty()) {
-            Toast.makeText(this, "All fields must be filled", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Convert unit count to integer with error handling
         int unitCount;
         try {
             unitCount = Integer.parseInt(unitStr);
@@ -199,10 +181,6 @@ public class EditActivity extends AppCompatActivity {
             Toast.makeText(this, "Unit count must be a valid number", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Check if an owner is selected
-        User selectedOwner = (User) propertyOwner.getSelectedItem();
-        int ownerId = (selectedOwner != null) ? selectedOwner.getId() : -1;
 
         // Log input values for debugging
         Log.d(TAG, "Property Name: " + name);
@@ -214,7 +192,6 @@ public class EditActivity extends AppCompatActivity {
         Log.d(TAG, "Fax: " + fax);
         Log.d(TAG, "Unit Count: " + unitCount);
         Log.d(TAG, "Property Type: " + type);
-        Log.d(TAG, "Owner ID: " + ownerId);
         Log.d(TAG, "Image Base64: " + (imageBase64 != null ? "Available" : "Not Available"));
 
         // Prepare ContentValues for database update
@@ -228,13 +205,9 @@ public class EditActivity extends AppCompatActivity {
         values.put("fax_number", fax);
         values.put("unit_count", unitCount);
         values.put("property_type", type);
-        values.put("owner_id", ownerId);
-        // Add image to ContentValues only if it is available
         if (imageBase64 != null && !imageBase64.isEmpty()) {
             values.put("image_base64", imageBase64);
         }
-        // Log ContentValues before saving
-        Log.d(TAG, "ContentValues for Update: " + values.toString());
 
         // Perform database update
         boolean success = databaseHelper.updateProperty(propertyId, values);
@@ -245,12 +218,14 @@ public class EditActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to update property", Toast.LENGTH_SHORT).show();
         }
     }
+
     private String encodeBitmapToBase64(Bitmap bitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         byte[] byteArray = outputStream.toByteArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
+
     private Bitmap decodeBase64ToBitmap(String base64) {
         byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
         return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);

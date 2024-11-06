@@ -72,13 +72,6 @@
             android:inputType="number"
             android:layout_marginTop="8dp" />
 
-        <!-- Owner Selector -->
-        <Spinner
-            android:id="@+id/property_owner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
-
         <!-- Property Type -->
         <EditText
             android:id="@+id/property_type"
