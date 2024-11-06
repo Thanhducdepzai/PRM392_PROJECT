@@ -7,6 +7,9 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--Khai báo quyền: Thẻ này thông báo với hệ thống Android rằng ứng dụng của
+    bạn yêu cầu quyền gửi SMS (ở đây là SEND_SMS)
+    để thực hiện các hành động liên quan đến việc gửi tin nhắn.-->
     <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
