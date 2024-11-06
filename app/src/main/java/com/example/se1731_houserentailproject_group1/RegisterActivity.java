@@ -21,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.se1731_houserentailproject_group1.Adapter.UserAdapter;
 import com.example.se1731_houserentailproject_group1.Model.User;
+import com.example.se1731_houserentailproject_group1.Utils.SendOtp;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
         setupWindowInsets();
 
@@ -94,8 +94,8 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         user = createUser(fullName, email, password, phoneNumber);
-        otp = generateOTP();
-        requestSmsPermissionAndSendOTP(phoneNumber, otp);  // Gọi yêu cầu quyền
+        otp = SendOtp.generateOTP();
+        requestSmsPermissionAndSendOTP(phoneNumber, otp);
     }
 
     private boolean isInputValid(String fullName, String phoneNumber, String email, String password, String rePassword) {
@@ -115,6 +115,10 @@ public class RegisterActivity extends AppCompatActivity {
             showToast("Mật khẩu không khớp!");
             return false;
         }
+        if(userAdapter.checkPhoneNumberExist(phoneNumber)){
+            showToast("Số điện thoại đã tồn tại!");
+            return false;
+        }
         return true;
     }
 
@@ -126,25 +130,34 @@ public class RegisterActivity extends AppCompatActivity {
         user.setPhoneNumber(phoneNumber);
         user.setCreatedAt(getCurrentTimestamp());
         user.setUpdatedAt(getCurrentTimestamp());
+        user.setRoles("User");
         return user;
     }
 
+    /**
+     * Hàm này kiểm tra xem ứng dụng đã có quyền gửi SMS chưa. Nếu chưa,
+     * nó sẽ yêu cầu quyền này từ người dùng.
+     * Nếu đã có quyền, nó sẽ gửi OTP và chuyển hướng người dùng tới màn hình OTP.
+     * @param phone Số điện thoại người dùng
+     * @param otp Mã OTP
+     */
     private void requestSmsPermissionAndSendOTP(String phone, String otp) {
+        // Kiểm tra xem ứng dụng có quyền SEND_SMS hay không
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+            // Nếu không có quyền, yêu cầu cấp quyền SEND_SMS từ người dùng
+            // requestCode = 100 ở đây dùng để xác định yêu cầu cấp quyền sendSms
+            // có thể dùng số nguyên khác nhưng phải là duy nhất
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 100);
         } else {
             sendOTP(phone, otp);
-            redirectToOTPActivity();  // Chuyển ngay khi có quyền
+            redirectToOTPActivity();
         }
     }
 
-    private String generateOTP() {
-        return String.valueOf((int) (Math.random() * 9000) + 1000);
-    }
+
 
     private String getCurrentTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return sdf.format(new Date());
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
     }
 
     private void sendOTP(String phone, String otp) {
@@ -166,27 +179,24 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = new Intent(RegisterActivity.this, OTPActivity.class);
         intent.putExtra("OTP", otp);
         intent.putExtra("ActionType", "REGISTER");
-        intent.putExtra("User", user); // Chuyển thông tin người dùng
+        intent.putExtra("User", user);
         startActivity(intent);
         finish();
     }
-
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        userAdapter.close();
-//    }
-
+    /**
+     * Hàm này được gọi khi người dùng trả lời yêu cầu quyền của ứng dụng.
+     * ví dụ: đồng ý hoặc từ chối cấp quyền) mà ứng dụng đã gửi.
+     * @param requestCode Mã yêu cầu cấp quyền
+     * @param permissions Mảng các quyền được yêu cầu
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 100) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                sendOTP(phoneNumberEditText.getText().toString().trim(), otp);
-                redirectToOTPActivity();  // Chuyển sau khi được cấp quyền
-            } else {
-                showToast("Quyền bị từ chối!");
-            }
+        if (requestCode == 100 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            sendOTP(phoneNumberEditText.getText().toString().trim(), otp);
+            redirectToOTPActivity();
+        } else {
+            showToast("Quyền bị từ chối!");
         }
     }
 }
