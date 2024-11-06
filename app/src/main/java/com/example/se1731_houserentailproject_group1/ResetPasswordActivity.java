@@ -22,7 +22,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     private EditText etNewPassword, etConfirmPassword;
     private Button btnResetPassword;
     private UserAdapter userAdapter;
-    private int userId; // Assume you will pass the user ID to this activity
+    private User user; // Assume you will pass the user ID to this activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +35,14 @@ public class ResetPasswordActivity extends AppCompatActivity {
             return insets;
         });
 
+        user = (User) getIntent().getSerializableExtra("user");
+
         // Initialize views
         etNewPassword = findViewById(R.id.etNewPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnResetPassword = findViewById(R.id.btnResetPassword);
+
+        user = (User) getIntent().getSerializableExtra("user");
 
         // Initialize UserAdapter
         userAdapter = new UserAdapter(this);
@@ -62,8 +66,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
             return;
         }
 
-        User user = new User();
-        user.setId(userId); // Assuming userId is set somehow (e.g., from Intent extras)
+//        User user = new User();
+//        user.setId(userId); // Assuming userId is set somehow (e.g., from Intent extras)
         user.setPasswordHash(newPassword); // Set the new password
 
         long result = userAdapter.updateUserPassword(user);
